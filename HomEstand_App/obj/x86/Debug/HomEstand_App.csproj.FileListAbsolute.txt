@@ -1,0 +1,14 @@
+C:\Users\Griselda\AppData\Local\Temporary Projects\HomEstand_App\bin\Debug\HomEstand_App.exe
+C:\Users\Griselda\AppData\Local\Temporary Projects\HomEstand_App\bin\Debug\HomEstand_App.pdb
+C:\Users\Griselda\AppData\Local\Temporary Projects\HomEstand_App\obj\x86\Debug\HomEstand_App.Form1.resources
+C:\Users\Griselda\AppData\Local\Temporary Projects\HomEstand_App\obj\x86\Debug\HomEstand_App.Properties.Resources.resources
+C:\Users\Griselda\AppData\Local\Temporary Projects\HomEstand_App\obj\x86\Debug\HomEstand_App.csproj.GenerateResource.Cache
+C:\Users\Griselda\AppData\Local\Temporary Projects\HomEstand_App\obj\x86\Debug\HomEstand_App.exe
+C:\Users\Griselda\AppData\Local\Temporary Projects\HomEstand_App\obj\x86\Debug\HomEstand_App.pdb
+C:\Users\Griselda\Documents\Visual Studio 2010\Projects\HomEstand_App\HomEstand_App\obj\x86\Debug\HomEstand_App.exe
+C:\Users\Griselda\Documents\Visual Studio 2010\Projects\HomEstand_App\HomEstand_App\obj\x86\Debug\HomEstand_App.pdb
+C:\Users\Griselda\Documents\Visual Studio 2010\Projects\HomEstand_App\HomEstand_App\bin\Debug\HomEstand_App.exe
+C:\Users\Griselda\Documents\Visual Studio 2010\Projects\HomEstand_App\HomEstand_App\bin\Debug\HomEstand_App.pdb
+C:\Users\Griselda\Documents\Visual Studio 2010\Projects\HomEstand_App\HomEstand_App\obj\x86\Debug\HomEstand_App.Form1.resources
+C:\Users\Griselda\Documents\Visual Studio 2010\Projects\HomEstand_App\HomEstand_App\obj\x86\Debug\HomEstand_App.Properties.Resources.resources
+C:\Users\Griselda\Documents\Visual Studio 2010\Projects\HomEstand_App\HomEstand_App\obj\x86\Debug\HomEstand_App.csproj.GenerateResource.Cache
