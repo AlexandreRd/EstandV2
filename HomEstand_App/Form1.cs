@@ -161,7 +161,8 @@ namespace HomEstand_App
             //ssageBox.Show(TableExists(CONNECT, "D_" + txtTest1.Text).ToString());
             //MessageBox.Show(Resources.Cias_WS);
 
-            CIAToStand(2, "QUALITAS", 0.7);
+            //CIAToStand(2, "QUALITAS", 0.7);
+            CIAToStand(21, "AFIRME", 0.7);
         }
 
         // EJECUTAR CONSULTA
@@ -366,12 +367,17 @@ namespace HomEstand_App
 
             // CEVIC List from DatosEstandarizados
             List<String> CEVList = new List<String>();
-            // Key (Clave) List from DatosEstandarizados
+            // Key (Clave) List from EstandarizadosCia
             List<String> NEWKList = new List<String>();
+            // Key (Clave) List from EstandarizadosCia
+            List<String> NEWTSMList = new List<String>();
 
             // Campos de CEVIC
             String cveCEVIC, Mar, Typ, Mod, cveCo;
             int nMod = 0;
+            //
+            Boolean NMod = false;
+
 
             /* Progress Count
             pBCount = 0;
@@ -401,6 +407,7 @@ namespace HomEstand_App
 
                 while (READER_SD.Read())
                 {
+                    NMod = false;
                     // Getting from NewCompany
                     try
                     {
@@ -414,11 +421,14 @@ namespace HomEstand_App
                         OleDbDataReader READER_NEWC = COMMAND_NEWC.ExecuteReader();
 
                         NEWKList.Clear();
+                        NEWTSMList.Clear();
+
                         DT_New.Rows.Clear();
 
                         while (READER_NEWC.Read())
                         {
                             NEWKList.Add(READER_NEWC["Clave"].ToString());
+                            NEWTSMList.Add(READER_NEWC["DescripTSM"].ToString());
 
                             DT_New.Rows.Add(
                                 READER_NEWC["Trans"].ToString().Trim(),
@@ -464,6 +474,8 @@ namespace HomEstand_App
                         // Modelo Disponible en DatosEstandarizados
                         if (READER_STD.HasRows)
                         {
+                            //NMod = false;
+
                             CEVList.Clear();
                             DT_Std.Rows.Clear();
 
@@ -617,6 +629,7 @@ namespace HomEstand_App
                         }
                         else
                         {
+                            NMod = true;
                             // Modelo No Disponible en DatosEstandarizados
                             // Add All NEWKList to DATOSESTAND
 
@@ -628,21 +641,22 @@ namespace HomEstand_App
                                 (READER_SD["Tipo"].ToString());
                             Mod = READER_SD["Modelo"].ToString();
 
-                            foreach (String CEV in NEWKList) {
+                            for (int i = 0; i < NEWKList.Count; i++)
+                            {
                                 // Generando CEVIC
-                                cveCEVIC = Mar + Typ + Mod + CEV + "_X00";
+                                cveCEVIC = Mar + Typ + Mod + NEWKList.ElementAt(i) + "_X00";
 
                                 String myQuery = "INSERT INTO DatosEstandarizados " +
                                             "(Cia_" + numCia.ToString() + ", Cia_Disponible, CEVIC, Modelo, CveMarca_Cia, CveTipo_Cia, CveVersion_Cia, CveTrans_Cia, Marca, Tipo, Descripcion)" +
                                             "VALUES ('" +
-                                            CEV + "', '" +
+                                            NEWKList.ElementAt(i) + "', '" +
                                             numCia.ToString() + "| ', '" +
                                             cveCEVIC + "', '" +
                                             Mod +
                                             "', '', '', '', '', '" +
                                             READER_SD["Marca"].ToString() + "', '" +
                                             READER_SD["Tipo"].ToString() + "', '" +
-                                            READER_SD["DescripTSM"].ToString() + "')";
+                                            NEWTSMList.ElementAt(i) + "')";
 
                                 doQuery(myQuery
                                 ,
@@ -651,6 +665,7 @@ namespace HomEstand_App
                             }
 
                             NEWKList.Clear();
+                            NEWTSMList.Clear();
                         }
 
                         READER_STD.Close();
@@ -660,96 +675,111 @@ namespace HomEstand_App
                     {
                         MessageBox.Show(Ex.ToString(), "ERROR EN SELECT_FROM_DATOS_STD");
                     }
-                }
 
-                // Evaluate Similarty
-                // Si el Modelo esta en DatosEstandarizados
-                
-                Int32[] MResult = new Int32[DT_New.Rows.Count];
-                MResult = evMatModels(DT_Std, DT_New, rAccuracy);
+                    // Evaluate Similarty
+                    // Si el Modelo esta en DatosEstandarizados
+                    if (NMod == false)
+                    {
 
-                for(Int32 i = 0; i < MResult.Length; i++) {
-                    switch (MResult[i]) {
-                        case -2:
-                            MessageBox.Show("La has liado, tío", "Error");
-                            break;
-                            // No es Match, Insertar Nuevo Registro
-                        case -1:
-                            // Generando CEVIC
-                            Mar = (READER_SD["Marca"].ToString().Length > 3) ? 
-                                (READER_SD["Marca"].ToString()).Substring(0, 3) :
-                                (READER_SD["Marca"].ToString());
-                            Typ = (READER_SD["Tipo"].ToString().Length > 2) ?
-                                (READER_SD["Tipo"].ToString()).Substring(0, 2) :
-                                (READER_SD["Tipo"].ToString());
-                            Mod = READER_SD["Modelo"].ToString();
-                            cveCo = NEWKList.ElementAt(i);
-                            cveCEVIC = Mar + Typ + Mod + cveCo + "_X";
-                            
-                            try
+                        Int32[] MResult = new Int32[DT_New.Rows.Count];
+                        MResult = evMatModels(DT_Std, DT_New, rAccuracy);
+
+                        for (Int32 i = 0; i < MResult.Length; i++)
+                        {
+                            switch (MResult[i])
                             {
-                                OleDbConnection CONNECT_NR = new OleDbConnection(MyConnString);
-                                CONNECT_NR.Open();
-                                // SELECT COUNT (*) FROM DatosEstandarizados WHERE CEVIC LIKE '8514_X??'
-                                OleDbCommand COMMAND_CEVIC = new OleDbCommand("SELECT COUNT (*) FROM DatosEstandarizados WHERE CEVIC LIKE '" + cveCEVIC + "__'", CONNECT_NR);
-                                nMod = Convert.ToInt32(COMMAND_CEVIC.ExecuteScalar());
-                                CONNECT_NR.Close();
-                                    
-                                cveCEVIC += nMod.ToString("D2");
-                                String myQuery = "INSERT INTO DatosEstandarizados " +
-                                        "(Cia_" + numCia.ToString() + ", Cia_Disponible, CEVIC, Modelo, CveMarca_Cia, CveTipo_Cia, CveVersion_Cia, CveTrans_Cia, Marca, Tipo, Descripcion)" +
-                                        "VALUES ('" +
-                                        cveCo + "', '" +
-                                        numCia.ToString() + "| ', '" +
-                                        cveCEVIC + "', '" +
-                                        Mod +
-                                        "', '', '', '', '', '" +
-                                        READER_SD["Marca"].ToString() + "', '" +
-                                        READER_SD["Tipo"].ToString() + "', '" +
-                                        READER_SD["DescripTSM"].ToString() + "')";
+                                case -2:
+                                    MessageBox.Show("La has liado, tío", "Error");
+                                    break;
+                                // No es Match, Insertar Nuevo Registro
+                                case -1:
+                                    // Generando CEVIC
+                                    Mar = (READER_SD["Marca"].ToString().Length > 3) ?
+                                        (READER_SD["Marca"].ToString()).Substring(0, 3) :
+                                        (READER_SD["Marca"].ToString());
+                                    Typ = (READER_SD["Tipo"].ToString().Length > 2) ?
+                                        (READER_SD["Tipo"].ToString()).Substring(0, 2) :
+                                        (READER_SD["Tipo"].ToString());
+                                    Mod = READER_SD["Modelo"].ToString();
+                                    cveCo = NEWKList.ElementAt(i);
+                                    cveCEVIC = Mar + Typ + Mod + cveCo + "_X";
 
-                                doQuery(myQuery
-                                    ,
-                                    MyConnString
-                                );
+                                    try
+                                    {
+                                        OleDbConnection CONNECT_NR = new OleDbConnection(MyConnString);
+                                        CONNECT_NR.Open();
+                                        // SELECT COUNT (*) FROM DatosEstandarizados WHERE CEVIC LIKE '8514_X??'
+                                        OleDbCommand COMMAND_CEVIC = new OleDbCommand("SELECT COUNT (*) FROM DatosEstandarizados WHERE CEVIC LIKE '" + cveCEVIC + "__'", CONNECT_NR);
+                                        nMod = Convert.ToInt32(COMMAND_CEVIC.ExecuteScalar());
+                                        CONNECT_NR.Close();
 
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show(ex.ToString());
-                            }
-                            break;
-                        // Match Exitoso, Insercion de Referencia
-                        default:
-                            if (MResult[i] >= 0 && MResult[i] <= DT_Std.Rows.Count)
-                            {
-                                OleDbConnection CONNECT_NR = new OleDbConnection(MyConnString);
-                                CONNECT_NR.Open();
-                                // SELECT COUNT (*) FROM DatosEstandarizados WHERE CEVIC LIKE '8514_X??'
-                                OleDbCommand COMMAND_CEVIC = new OleDbCommand("SELECT Cia_Disponible FROM DatosEstandarizados WHERE CEVIC = '" + CEVList.ElementAt(i) + "'", CONNECT_NR);
-                                String cDisp = COMMAND_CEVIC.ExecuteScalar().ToString();
-                                CONNECT_NR.Close();
+                                        cveCEVIC += nMod.ToString("D2");
+                                        String myQuery = "INSERT INTO DatosEstandarizados " +
+                                                "(Cia_" + numCia.ToString() + ", Cia_Disponible, CEVIC, Modelo, CveMarca_Cia, CveTipo_Cia, CveVersion_Cia, CveTrans_Cia, Marca, Tipo, Descripcion)" +
+                                                "VALUES ('" +
+                                                cveCo + "', '" +
+                                                numCia.ToString() + "| ', '" +
+                                                cveCEVIC + "', '" +
+                                                Mod +
+                                                "', '', '', '', '', '" +
+                                                READER_SD["Marca"].ToString() + "', '" +
+                                                READER_SD["Tipo"].ToString() + "', '" +
+                                                NEWTSMList.ElementAt(i) + "')";
 
-                                String myQuery = "UPDATE DatosEstandarizados " + 
-                                    "SET Cia_" + numCia.ToString() + " = '" + NEWKList.ElementAt(i) + "'" +
-                                    ", Cia_Disponible = '" + sortDescrip(cDisp.Trim() + " " + numCia.ToString() + "| ' ", false) +
-                                    "WHERE CEVIC = '" + CEVList.ElementAt(i) +  "'" +
-                                    "AND Modelo = " + READER_SD["Modelo"].ToString();
-                   
-                                doQuery(myQuery
-                                    ,
-                                    MyConnString
-                                );
-                                 
-                            } else {
-                                MessageBox.Show("La has liado, tío", "Error");
+                                        doQuery(myQuery
+                                            ,
+                                            MyConnString
+                                        );
+
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        MessageBox.Show(ex.ToString());
+                                    }
+                                    break;
+                                // Match Exitoso, Insercion de Referencia
+                                default:
+                                    if (MResult[i] >= 0 && MResult[i] <= DT_Std.Rows.Count)
+                                    {
+                                        try
+                                        {
+                                            OleDbConnection CONNECT_NR = new OleDbConnection(MyConnString);
+                                            CONNECT_NR.Open();
+                                            // SELECT COUNT (*) FROM DatosEstandarizados WHERE CEVIC LIKE '8514_X??'
+                                            OleDbCommand COMMAND_CEVIC = new OleDbCommand("SELECT Cia_Disponible FROM DatosEstandarizados WHERE CEVIC = '" + CEVList.ElementAt(MResult[i]) + "'", CONNECT_NR);
+                                            String cDisp = COMMAND_CEVIC.ExecuteScalar().ToString();
+                                            CONNECT_NR.Close();
+
+                                            String myQuery = "UPDATE DatosEstandarizados " +
+                                                "SET Cia_" + numCia.ToString() + " = '" + NEWKList.ElementAt(i) + "'" +
+                                                ", Cia_Disponible = '" + sortDescrip(cDisp.Trim() + " " + numCia.ToString() + "| ", false).Trim() + "' "+
+                                                "WHERE CEVIC = '" + CEVList.ElementAt(MResult[i]) + "' " +
+                                                "AND Modelo = '" + READER_SD["Modelo"].ToString() + "'";
+
+                                            doQuery(myQuery
+                                                ,
+                                                MyConnString
+                                            );
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            MessageBox.Show(ex.ToString());
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("La has liado en el Match, tío", "Error");
+                                    }
+                                    break;
                             }
-                            break;
+                        }
                     }
                 }
-     
                 READER_SD.Close();
                 CONNECT_SD.Close();
+
+                MessageBox.Show("Compañía agregada a la tabla estandarizada", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception Ex)
             {
@@ -911,12 +941,17 @@ namespace HomEstand_App
             Double Max;
             Tuple<int, int> posMax;
 
+            // Matches
+            Int32 maxMatches = (DT_New.Rows.Count > DT_Std.Rows.Count) ? DT_Std.Rows.Count : DT_Std.Rows.Count;
+            Int32 nMatches = 0;
+            
             do
             {
                 // Obteniendo coeficiente Maximo
                 Max = MatSimD.Cast<Double>().Max();
                 // Obteniendo Posicion del coeficiente Maximo
                 posMax = getIndex(MatSimD, Max);
+                //MessageBox.Show(MatSimD.GetValue(posMax.Item1, posMax.Item2).ToString(), posMax.ToString() + Max.ToString());
 
                 if (Max > evAccuracy)
                 {
@@ -933,6 +968,7 @@ namespace HomEstand_App
                         }
 
                         Result[posMax.Item1] = posMax.Item2;
+                        nMatches++;
                     }
                     // Campos incompatibles, Match no completado
                     else
@@ -943,19 +979,40 @@ namespace HomEstand_App
                 // Descripcion Simple no compatible
                 else
                 {
-                    MatSimF[posMax.Item1, posMax.Item2] = 0;
-                    Result[posMax.Item1] = -1;
-
-                    /*
-                    for (int i = 0; i < DT_Std.Rows.Count; i++ )
+                    // Forzando Match en caso de no cumplir
+                    if (nMatches < maxMatches)
                     {
-                        if (!Result.Contains(i)) { 
-                            
+                        for (int j = 0; j < DT_Std.Rows.Count; j++)
+                        {
+                            MatSimD[posMax.Item1, j] = 0;
                         }
-                    }*/
+                        for (int i = 0; i < DT_New.Rows.Count; i++)
+                        {
+                            MatSimD[i, posMax.Item2] = 0;
+                        }
+
+                        Result[posMax.Item1] = posMax.Item2;
+                        nMatches++;
+                        continue;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < DT_New.Rows.Count; i++)
+                        {
+                            if (Result[i] == -2)
+                                Result[i] = -1;
+                        }
+                        break;
+                    }
                 }
-            } while (Result.Contains(-2));
-            
+            } while (nMatches < maxMatches);
+
+
+            for (int i = 0; i < DT_New.Rows.Count; i++)
+            {
+                if (Result[i] == -2)
+                    Result[i] = -1;
+            }
             return Result;
            }
 
