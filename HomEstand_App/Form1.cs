@@ -27,7 +27,6 @@ namespace HomEstand_App
             InitializeComponent();
         }
 
-
         // VARIABLES GLOBALES 
         // Conexion a la Base de Datos
         String MyConnString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\\Users\\Griselda\\Desktop\\H&E_DB.mdb;";
@@ -156,12 +155,13 @@ namespace HomEstand_App
             txt_CiaID.Text = CiasID[cmb_Cia.SelectedIndex];
         }
 
-
         private void btnTest1_Click(object sender, EventArgs e)
         {
             // OleDbConnection CONNECT = new OleDbConnection(MyConnString);
             //ssageBox.Show(TableExists(CONNECT, "D_" + txtTest1.Text).ToString());
             //MessageBox.Show(Resources.Cias_WS);
+
+            CIAToStand(2, "QUALITAS", 0.7);
         }
 
         // EJECUTAR CONSULTA
@@ -186,7 +186,7 @@ namespace HomEstand_App
 
         }
 
-        public Boolean equalDescrip(String a, String b)
+        public Boolean eqDescrip(String a, String b)
         {
             a = a.ToUpper(); b = b.ToUpper();
             String aWord = "", bWord = "";
@@ -267,7 +267,7 @@ namespace HomEstand_App
             return (listA.Count == listB.Count) && new HashSet<string>(listA).SetEquals(listB);
         }
 
-        public String sortDescrip(String a)
+        public String sortDescrip(String a, Boolean Inverse)
         {
             a = a.ToUpper();
             String aWord = "";
@@ -310,478 +310,24 @@ namespace HomEstand_App
                 }
             }
 
+            // Ordenando Lista
             listA.Sort();
+            // Lista Inversa
+            if (Inverse)
+            {
+                listA.Reverse();
+            }
 
+            // Construyendo nueva String
             aWord = "";
             foreach (String Val in listA)
             {
                 aWord += Val + " ";
             }
-
             return aWord;
         }
 
-        public Int32 evalReader(DataTable myStandData)
-        {
-            // JaroWinkler Object
-            var Jw = new JaroWinkler();
-
-            int RowC = 0;
-
-            double[] MatchD = new double[myStandData.Rows.Count];
-            Int32[] MatchF = new Int32[myStandData.Rows.Count];
-
-            DataRow MyModel = null;
-
-            // Evaluando Elementos
-            foreach (DataRow Row in myStandData.Rows)
-            {
-                if (RowC == 0)
-                {
-                    MyModel = Row;
-                }
-                else
-                {
-                    // Transmision
-                    if (equalDescrip(MyModel.Field<String>(0), Row.Field<String>(0)) || Row.Field<String>(0).Length == 0)
-                    {
-                        MatchF[RowC]++;
-                    }
-                    // GearBox
-                    if (equalDescrip(MyModel.Field<String>(1), Row.Field<String>(1)) || Row.Field<String>(1).Length == 0)
-                    {
-                        MatchF[RowC]++;
-                    }
-                    // Cilindros
-                    if (equalDescrip(MyModel.Field<String>(2), Row.Field<String>(2)) || Row.Field<String>(2).Length == 0)
-                    {
-                        MatchF[RowC]++;
-                    }
-                    // Pasajeros
-                    if (equalDescrip(MyModel.Field<String>(3), Row.Field<String>(3)) || Row.Field<String>(3).Length == 0)
-                    {
-                        MatchF[RowC]++;
-                    }
-                    // Puertas
-                    if (equalDescrip(MyModel.Field<String>(4), Row.Field<String>(4)) || Row.Field<String>(4).Length == 0)
-                    {
-                        MatchF[RowC]++;
-                    }
-                    // ABS
-                    if (equalDescrip(MyModel.Field<String>(5), Row.Field<String>(5)) || Row.Field<String>(5).Length == 0)
-                    {
-                        MatchF[RowC]++;
-                    }
-                    // Vestidura
-                    if (equalDescrip(MyModel.Field<String>(6), Row.Field<String>(6)) || Row.Field<String>(6).Length == 0)
-                    {
-                        MatchF[RowC]++;
-                    }
-                    // Sonido
-                    if (equalDescrip(MyModel.Field<String>(7), Row.Field<String>(7)) || Row.Field<String>(7).Length == 0)
-                    {
-                        MatchF[RowC]++;
-                    }
-                    // Equipado
-                    if (equalDescrip(MyModel.Field<String>(8), Row.Field<String>(8)) || Row.Field<String>(8).Length == 0)
-                    {
-                        MatchF[RowC]++;
-                    }
-                    // Aire
-                    if (equalDescrip(MyModel.Field<String>(9), Row.Field<String>(9)) || Row.Field<String>(9).Length == 0)
-                    {
-                        MatchF[RowC]++;
-                    }
-                    // BAire
-                    if (equalDescrip(MyModel.Field<String>(10), Row.Field<String>(10)) || Row.Field<String>(10).Length == 0)
-                    {
-                        MatchF[RowC]++;
-                    }
-                    // QC
-                    if (equalDescrip(MyModel.Field<String>(11), Row.Field<String>(11)) || Row.Field<String>(11).Length == 0)
-                    {
-                        MatchF[RowC]++;
-                    }
-                    // DescripSimple
-                    MatchD[RowC] = (Row.Field<String>(12).Length > 0) ?
-                        Jw.GetSimilarity(sortDescrip(MyModel.Field<String>(12)), sortDescrip(Row.Field<String>(12)))
-                        : 0.70;
-                    /*
-                    if (Levenshtein.CalculateDistance(
-                            sortDescrip(MyModel.Field<String>(12)), sortDescrip(Row.Field<String>(12)), 1)
-                            < Convert.ToInt32(Math.Max(Row.Field<String>(12).Length, MyModel.Field<String>(12).Length) * 0.7))
-                    {
-                             MatchD[RowC] = true;
-                    }  */
-                }
-                RowC++;
-            }
-
-            int bestMatch = 0;
-            for (int i = 0; i < MatchF.Length; i++)
-            {
-                if (i == 0)
-                {
-                    MatchD[i] = 0.699;
-                    MatchF[i] = 6;
-                }
-                else
-                {
-                    if (MatchF[i] > MatchF[bestMatch] && MatchD[i] > MatchD[bestMatch])
-                        bestMatch = i;
-                }
-            }
-
-            return bestMatch = (MatchF[bestMatch] > 7 && MatchD[bestMatch] > 0.7) ? bestMatch : 0;
-        }
-
-
-        public void insertNewComp(int numCia, String nomCia)
-        {
-            OleDbConnection CONNECT = new OleDbConnection(MyConnString);
-            OleDbConnection CONNECT2 = new OleDbConnection(MyConnString);
-            // Cambiar nombre de acuerdo con la Tabla de la Cia
-            String CONSULT_COMP = "SELECT * FROM Estandarizados_" + nomCia; // +"2";
-            String CONSULT_NEW = "SELECT * FROM DatosEstandarizados WHERE ";
-
-            // Campos de CEVIC
-            String cveCEVIC, Mar, Typ, Mod, cveCo;
-            int nMod = 0;
-
-            // Acronym DataBase
-            // Fields: Trans, Gear, Pts, Pass, Brakes, Vest, Sound, Equip, Air, AirBag, QC, Descrip
-            List<String>[] AcroDB = getAcroDB();
-
-            // DataTable from DatosEstandarizados
-            DataTable dTStand = new DataTable();
-            dTStand.Columns.Add("sTrans", typeof(String));
-            dTStand.Columns.Add("sGear", typeof(String));
-            dTStand.Columns.Add("sCyl", typeof(String));
-            dTStand.Columns.Add("sPts", typeof(String));
-            dTStand.Columns.Add("sPass", typeof(String));
-            dTStand.Columns.Add("sBrakes", typeof(String));
-            dTStand.Columns.Add("sVest", typeof(String));
-            dTStand.Columns.Add("sSound", typeof(String));
-            dTStand.Columns.Add("sEquip", typeof(String));
-            dTStand.Columns.Add("sAir", typeof(String));
-            dTStand.Columns.Add("sAirBag", typeof(String));
-            dTStand.Columns.Add("sQC", typeof(String));
-            dTStand.Columns.Add("sDescrip", typeof(String));
-
-            List<String> CEVList = new List<String>();
-
-            // Progress Count
-            // pBCount = 0;
-            /* try
-            {
-                OleDbConnection CONNECTPB = new OleDbConnection(MyConnString);
-                CONNECTPB.Open();
-                OleDbCommand COMMAND_PBAR = new OleDbCommand("SELECT COUNT (*) FROM Estandarizados_" + nomCia, CONNECTPB);
-
-                pBMax = Convert.ToInt32(COMMAND_PBAR.ExecuteScalar());
-
-                CONNECTPB.Close();
-            }
-            catch (Exception Ex)
-            {
-                MessageBox.Show(Ex.ToString(), "Error en Count de Registros");
-            }
-            //this.Invoke(this.setBarDelegate);
-             * */
-
-            try
-            {
-                CONNECT.Open();
-                OleDbCommand COMMAND_COMP = new OleDbCommand(CONSULT_COMP, CONNECT);
-                OleDbDataReader READER_COMP = COMMAND_COMP.ExecuteReader();
-
-                while (READER_COMP.Read())
-                {
-                    try
-                    {
-                        CONNECT2.Open();
-                        OleDbCommand COMMAND_NEW = new OleDbCommand(CONSULT_NEW +
-                            "CEVIC IN (" +
-                                "SELECT MyCEVICPool FROM (" +
-                                    "SELECT IIF([Cia_" + numCia.ToString() + "] Is Null, 'unavailable', [Cia_" + numCia.ToString() + "]) AS MyCIA, CEVIC AS MyCEVICPool FROM DatosEstandarizados " +
-                                    "WHERE Marca = '" + READER_COMP["Marca"].ToString() + "' AND Tipo = '" + READER_COMP["Tipo"].ToString() + "' AND Modelo = '" + READER_COMP["Modelo"].ToString() + "')" +
-                                "WHERE MyCIA = 'unavailable')",
-                            CONNECT2);
-                        OleDbDataReader READER_NEW = COMMAND_NEW.ExecuteReader();
-
-                        String myQuery = "";
-                        // POSIBLE MATCH
-                        if (READER_NEW.HasRows)
-                        {
-                            CEVList.Clear();
-                            dTStand.Rows.Clear();
-                            // Adding New Model as First Row
-                            dTStand.Rows.Add(
-                                    READER_COMP["Trans"].ToString(),
-                                    READER_COMP["Trans"].ToString(),
-                                    READER_COMP["Cilindros"].ToString(),
-                                    READER_COMP["Puertas"].ToString(),
-                                    READER_COMP["NPass"].ToString(),
-                                    READER_COMP["ABS"].ToString(),
-                                    READER_COMP["Vestiduras"].ToString(),
-                                    READER_COMP["Sonido"].ToString(),
-                                    READER_COMP["Equipado"].ToString(),
-                                    READER_COMP["Aire"].ToString(),
-                                    READER_COMP["BAire"].ToString(),
-                                    READER_COMP["QC"].ToString(),
-                                    READER_COMP["DescripSimple"].ToString()
-                                );
-
-                            while (READER_NEW.Read())
-                            {
-                                CEVList.Add(READER_NEW["CEVIC"].ToString());
-
-                                String dsTrans = "", dsGear = "", dsCyl = "", dsPts = "", dsPass = "", dsBrakes = "",
-                                       dsVest = "", dsSound = "", dsEquip = "", dsAir = "", dsAirBag = "", dsQC = "";
-                                String nTSM = " " + READER_NEW["Descripcion"].ToString().Trim() + " ";
-
-                                // Getting Info. from Models
-                                for (int i = 0; i < AcroDB[0].Count; i++)
-                                {
-                                    if (nTSM.Contains(" " + AcroDB[0].ElementAt(i) + " ") && AcroDB[0].ElementAt(i) != "NA")
-                                    {
-                                        nTSM = nTSM.Replace(" " + AcroDB[0].ElementAt(i) + " ", " ");
-                                        dsTrans += AcroDB[0].ElementAt(i) + " ";
-                                        //MessageBox.Show("Contains Trans: " + dsTrans);
-                                    }
-                                }
-                                for (int i = 0; i < AcroDB[1].Count; i++)
-                                {
-                                    if (nTSM.Contains(" " + AcroDB[1].ElementAt(i) + " ") && AcroDB[1].ElementAt(i) != "NA")
-                                    {
-                                        nTSM = nTSM.Replace(" " + AcroDB[1].ElementAt(i) + " ", " ");
-                                        dsGear += AcroDB[1].ElementAt(i) + " ";
-                                    }
-                                }
-                                for (int i = 0; i < AcroDB[2].Count; i++)
-                                {
-                                    if (nTSM.Contains(" " + AcroDB[2].ElementAt(i) + " ") && AcroDB[2].ElementAt(i) != "NA")
-                                    {
-                                        nTSM = nTSM.Replace(" " + AcroDB[2].ElementAt(i) + " ", " ");
-                                        dsCyl += AcroDB[2].ElementAt(i) + " ";
-                                    }
-                                }
-                                for (int i = 0; i < AcroDB[3].Count; i++)
-                                {
-                                    if (nTSM.Contains(" " + AcroDB[3].ElementAt(i) + " ") && AcroDB[3].ElementAt(i) != "NA")
-                                    {
-                                        nTSM = nTSM.Replace(" " + AcroDB[3].ElementAt(i) + " ", " ");
-                                        dsPass += AcroDB[3].ElementAt(i) + " ";
-                                    }
-                                }
-                                for (int i = 0; i < AcroDB[4].Count; i++)
-                                {
-                                    if (nTSM.Contains(" " + AcroDB[4].ElementAt(i) + " ") && AcroDB[4].ElementAt(i) != "NA")
-                                    {
-                                        nTSM = nTSM.Replace(" " + AcroDB[4].ElementAt(i) + " ", " ");
-                                        dsPts += AcroDB[4].ElementAt(i) + " ";
-                                    }
-                                }
-                                for (int i = 0; i < AcroDB[5].Count; i++)
-                                {
-                                    if (nTSM.Contains(" " + AcroDB[5].ElementAt(i) + " ") && AcroDB[5].ElementAt(i) != "NA")
-                                    {
-                                        nTSM = nTSM.Replace(" " + AcroDB[5].ElementAt(i) + " ", " ");
-                                        dsBrakes += AcroDB[5].ElementAt(i) + " ";
-                                    }
-                                }
-                                for (int i = 0; i < AcroDB[6].Count; i++)
-                                {
-                                    if (nTSM.Contains(" " + AcroDB[6].ElementAt(i) + " ") && AcroDB[6].ElementAt(i) != "NA")
-                                    {
-                                        nTSM = nTSM.Replace(" " + AcroDB[6].ElementAt(i) + " ", " ");
-                                        dsVest += AcroDB[6].ElementAt(i) + " ";
-                                    }
-                                }
-                                for (int i = 0; i < AcroDB[7].Count; i++)
-                                {
-                                    if (nTSM.Contains(" " + AcroDB[7].ElementAt(i) + " ") && AcroDB[7].ElementAt(i) != "NA")
-                                    {
-                                        nTSM = nTSM.Replace(" " + AcroDB[7].ElementAt(i) + " ", " ");
-                                        dsSound += AcroDB[7].ElementAt(i) + " ";
-                                    }
-                                }
-                                for (int i = 0; i < AcroDB[8].Count; i++)
-                                {
-                                    if (nTSM.Contains(" " + AcroDB[8].ElementAt(i) + " ") && AcroDB[8].ElementAt(i) != "NA")
-                                    {
-                                        nTSM = nTSM.Replace(" " + AcroDB[8].ElementAt(i) + " ", " ");
-                                        dsEquip += AcroDB[8].ElementAt(i) + " ";
-                                    }
-                                }
-                                for (int i = 0; i < AcroDB[9].Count; i++)
-                                {
-                                    if (nTSM.Contains(" " + AcroDB[9].ElementAt(i) + " ") && AcroDB[9].ElementAt(i) != "NA")
-                                    {
-                                        nTSM = nTSM.Replace(" " + AcroDB[9].ElementAt(i) + " ", " ");
-                                        dsAir += AcroDB[9].ElementAt(i) + " ";
-                                    }
-                                }
-                                for (int i = 0; i < AcroDB[10].Count; i++)
-                                {
-                                    if (nTSM.Contains(" " + AcroDB[10].ElementAt(i) + " ") && AcroDB[10].ElementAt(i) != "NA")
-                                    {
-                                        nTSM = nTSM.Replace(" " + AcroDB[10].ElementAt(i) + " ", " ");
-                                        dsAirBag += AcroDB[10].ElementAt(i) + " ";
-                                    }
-                                }
-                                for (int i = 0; i < AcroDB[11].Count; i++)
-                                {
-                                    if (nTSM.Contains(" " + AcroDB[11].ElementAt(i) + " ") && AcroDB[11].ElementAt(i) != "NA")
-                                    {
-                                        nTSM = nTSM.Replace(" " + AcroDB[11].ElementAt(i) + " ", " ");
-                                        dsQC += AcroDB[11].ElementAt(i) + " ";
-                                    }
-
-                                }
-
-                                //MessageBox.Show("Descrip: _" + nTSM.Trim() + "_");
-                                dTStand.Rows.Add(
-                                    dsTrans.Trim(),
-                                    dsGear.Trim(),
-                                    dsCyl.Trim(),
-                                    dsPts.Trim(),
-                                    dsPass.Trim(),
-                                    dsBrakes.Trim(),
-                                    dsVest.Trim(),
-                                    dsSound.Trim(),
-                                    dsEquip.Trim(),
-                                    dsAir.Trim(),
-                                    dsAirBag.Trim(),
-                                    dsQC.Trim(),
-                                    nTSM.Trim()
-                                );
-                            }
-
-                            // EVALUATE SIMILARTY
-                            int standRef = evalReader(dTStand);
-                            // Si es mayor a 0, insertar Referencia (Modelo Equivalente)
-                            if (standRef > 0)
-                            {
-                                myQuery = "UPDATE DatosEstandarizados SET Cia_" + numCia.ToString() + " = '" + READER_COMP["Clave"].ToString() +
-                                "' WHERE CEVIC = '" + CEVList.ElementAt(standRef - 1) + "' AND Modelo = '" + READER_COMP["Modelo"].ToString() + "'";
-                                doQuery(myQuery
-                                    ,
-                                    MyConnString
-                                );
-
-                                myQuery = "";
-                                //MessageBox.Show("MATCH EXITOSO EN REGISTRO", "INFO");
-                                CEVList.Clear();
-                            }
-                            // Sin Equivalencia, Nuevo Registro
-                            else
-                            {
-                                // CALCULAR CEVIC
-                                Mar = (READER_COMP["Marca"].ToString().Length > 3) ? (READER_COMP["Marca"].ToString()).Substring(0, 3) : (READER_COMP["Marca"].ToString());
-                                Typ = (READER_COMP["Tipo"].ToString().Length > 2) ? (READER_COMP["Tipo"].ToString()).Substring(0, 2) : (READER_COMP["Tipo"].ToString());
-                                Mod = READER_COMP["Modelo"].ToString();
-                                cveCo = READER_COMP["Clave"].ToString();
-                                cveCEVIC = Mar + Typ + Mod + cveCo + "_X";
-
-                                // COMPROBAR SI CEVIC ESTÁ EN LA TABLA
-                                try
-                                {
-                                    OleDbConnection CONNECT3 = new OleDbConnection(MyConnString);
-                                    CONNECT3.Open();
-                                    // SELECT COUNT (*) FROM DatosEstandarizados WHERE CEVIC LIKE '8514_X??'
-                                    OleDbCommand COMMAND_CEVIC = new OleDbCommand("SELECT COUNT (*) FROM DatosEstandarizados WHERE CEVIC LIKE '" + cveCEVIC + "__'", CONNECT);
-                                    nMod = (Int32)COMMAND_CEVIC.ExecuteScalar();
-                                    CONNECT3.Close();
-
-                                    cveCEVIC += nMod.ToString("D2");
-                                    myQuery = "INSERT INTO DatosEstandarizados" +
-                                        // Cambiar Nº de Compañia
-                                            "(Cia_" + numCia.ToString() + ", CEVIC, Modelo, CveMarca_Cia, CveTipo_Cia, CveVersion_Cia, CveTrans_Cia, Marca, Tipo, Descripcion)" +
-                                            "VALUES ('" +
-                                            cveCo + "','" +
-                                            cveCEVIC + "','" +
-                                            Mod +
-                                            "','','','','','" +
-                                            READER_COMP["Marca"].ToString() + "','" +
-                                            READER_COMP["Tipo"].ToString() + "','" +
-                                            READER_COMP["DescripTSM"].ToString() + "')";
-
-                                    doQuery(myQuery
-                                    ,
-                                    MyConnString
-                                    );
-
-                                }
-                                catch (Exception ex)
-                                {
-                                    MessageBox.Show(ex.ToString());
-                                }
-                                myQuery = "";
-                                cveCEVIC = "";
-
-                                //break;
-                                //MessageBox.Show("New");
-                            }
-                        }
-                        else
-                        {
-                            Mar = (READER_COMP["Marca"].ToString().Length > 3) ? (READER_COMP["Marca"].ToString()).Substring(0, 3) : (READER_COMP["Marca"].ToString());
-                            Typ = (READER_COMP["Tipo"].ToString().Length > 2) ? (READER_COMP["Tipo"].ToString()).Substring(0, 2) : (READER_COMP["Tipo"].ToString());
-                            Mod = READER_COMP["Modelo"].ToString();
-                            nMod = 0;
-                            cveCo = READER_COMP["Clave"].ToString();
-                            cveCEVIC = Mar + Typ + Mod + cveCo + "_X" + nMod.ToString("D2");
-
-                            myQuery = "INSERT INTO DatosEstandarizados" +
-                                // Cambiar Nº de Compañia
-                                "(Cia_" + numCia.ToString() + ", CEVIC, Modelo, CveMarca_Cia, CveTipo_Cia, CveVersion_Cia, CveTrans_Cia, Marca, Tipo, Descripcion)" +
-                                "VALUES ('" +
-
-                                cveCo + "','" +
-                                cveCEVIC + "','" +
-                                Mod +
-                                "','','','','','" +
-                                READER_COMP["Marca"].ToString() + "','" +
-                                READER_COMP["Tipo"].ToString() + "','" +
-                                READER_COMP["DescripTSM"].ToString() + "')";
-
-                            doQuery(myQuery
-                                ,
-                                MyConnString
-                            );
-
-                            myQuery = "";
-                            cveCEVIC = "";
-                            //MessageBox.Show("NUEVO REGISTRO, NUEVO AUTO", "INFO");
-                        }
-                        // Progress Update
-                        //pBCount++;
-                        //this.Invoke(this.updateStatusDelegate);
-
-                        READER_NEW.Close();
-                        CONNECT2.Close();
-                    }
-                    catch (Exception e)
-                    {
-                        MessageBox.Show(e.ToString(), "ERROR ON INSERT ON DATOS ESTANDARIZADOS");
-                    }
-                }
-                READER_COMP.Close();
-                CONNECT.Close();
-                MessageBox.Show("SUCCESS");
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.ToString(), "ERROR ON GETTING FROM COMPANY");
-            }
-            finally
-            {
-                //this.workerThread.Abort();
-            }
-        }
-
-        public void CIAToStand(int numCia, String nomCia)
+        public void CIAToStand(Int32 numCia, String nomCia, Double rAccuracy)
         {
             // Acronym DataBase
             // Fields: Trans, Gear, Pts, Pass, Brakes, Vest, Sound, Equip, Air, AirBag, QC, Descrip
@@ -844,6 +390,7 @@ namespace HomEstand_App
             }
             //this.Invoke(this.setBarDelegate);
             */
+
             try
             {
                 OleDbConnection CONNECT_SD = new OleDbConnection(MyConnString);
@@ -862,7 +409,7 @@ namespace HomEstand_App
                         OleDbCommand COMMAND_NEWC = new OleDbCommand("SELECT * FROM Estandarizados_" + nomCia + " WHERE " +
                                 "Marca = '" + READER_SD["Marca"].ToString() +
                                 "' AND Tipo = '" + READER_SD["Tipo"].ToString() +
-                                "' AND Modelo = '" + READER_SD["Modelo"].ToString() + "'",
+                                "' AND Modelo = " + READER_SD["Modelo"].ToString() + "",
                             CONNECT_NEWC);
                         OleDbDataReader READER_NEWC = COMMAND_NEWC.ExecuteReader();
 
@@ -914,6 +461,7 @@ namespace HomEstand_App
                             CONNECT_STD);
                         OleDbDataReader READER_STD = COMMAND_STD.ExecuteReader();
 
+                        // Modelo Disponible en DatosEstandarizados
                         if (READER_STD.HasRows)
                         {
                             CEVList.Clear();
@@ -1069,10 +617,39 @@ namespace HomEstand_App
                         }
                         else
                         {
+                            // Modelo No Disponible en DatosEstandarizados
                             // Add All NEWKList to DATOSESTAND
+
+                            Mar = (READER_SD["Marca"].ToString().Length > 3) ?
+                                    (READER_SD["Marca"].ToString()).Substring(0, 3) :
+                                    (READER_SD["Marca"].ToString());
+                            Typ = (READER_SD["Tipo"].ToString().Length > 2) ?
+                                (READER_SD["Tipo"].ToString()).Substring(0, 2) :
+                                (READER_SD["Tipo"].ToString());
+                            Mod = READER_SD["Modelo"].ToString();
+
                             foreach (String CEV in NEWKList) {
-                                
+                                // Generando CEVIC
+                                cveCEVIC = Mar + Typ + Mod + CEV + "_X00";
+
+                                String myQuery = "INSERT INTO DatosEstandarizados " +
+                                            "(Cia_" + numCia.ToString() + ", Cia_Disponible, CEVIC, Modelo, CveMarca_Cia, CveTipo_Cia, CveVersion_Cia, CveTrans_Cia, Marca, Tipo, Descripcion)" +
+                                            "VALUES ('" +
+                                            CEV + "', '" +
+                                            numCia.ToString() + "| ', '" +
+                                            cveCEVIC + "', '" +
+                                            Mod +
+                                            "', '', '', '', '', '" +
+                                            READER_SD["Marca"].ToString() + "', '" +
+                                            READER_SD["Tipo"].ToString() + "', '" +
+                                            READER_SD["DescripTSM"].ToString() + "')";
+
+                                doQuery(myQuery
+                                ,
+                                MyConnString
+                                );
                             }
+
                             NEWKList.Clear();
                         }
 
@@ -1086,18 +663,91 @@ namespace HomEstand_App
                 }
 
                 // Evaluate Similarty
-                if (DT_Std.Rows.Count > 0)
-                {
-                    Int32[] MResult = new Int32[DT_New.Rows.Count];
-
-                    MResult = evMatModels(DT_Std, DT_New);
-
-
-                }
-                else { 
+                // Si el Modelo esta en DatosEstandarizados
                 
-                }
+                Int32[] MResult = new Int32[DT_New.Rows.Count];
+                MResult = evMatModels(DT_Std, DT_New, rAccuracy);
 
+                for(Int32 i = 0; i < MResult.Length; i++) {
+                    switch (MResult[i]) {
+                        case -2:
+                            MessageBox.Show("La has liado, tío", "Error");
+                            break;
+                            // No es Match, Insertar Nuevo Registro
+                        case -1:
+                            // Generando CEVIC
+                            Mar = (READER_SD["Marca"].ToString().Length > 3) ? 
+                                (READER_SD["Marca"].ToString()).Substring(0, 3) :
+                                (READER_SD["Marca"].ToString());
+                            Typ = (READER_SD["Tipo"].ToString().Length > 2) ?
+                                (READER_SD["Tipo"].ToString()).Substring(0, 2) :
+                                (READER_SD["Tipo"].ToString());
+                            Mod = READER_SD["Modelo"].ToString();
+                            cveCo = NEWKList.ElementAt(i);
+                            cveCEVIC = Mar + Typ + Mod + cveCo + "_X";
+                            
+                            try
+                            {
+                                OleDbConnection CONNECT_NR = new OleDbConnection(MyConnString);
+                                CONNECT_NR.Open();
+                                // SELECT COUNT (*) FROM DatosEstandarizados WHERE CEVIC LIKE '8514_X??'
+                                OleDbCommand COMMAND_CEVIC = new OleDbCommand("SELECT COUNT (*) FROM DatosEstandarizados WHERE CEVIC LIKE '" + cveCEVIC + "__'", CONNECT_NR);
+                                nMod = Convert.ToInt32(COMMAND_CEVIC.ExecuteScalar());
+                                CONNECT_NR.Close();
+                                    
+                                cveCEVIC += nMod.ToString("D2");
+                                String myQuery = "INSERT INTO DatosEstandarizados " +
+                                        "(Cia_" + numCia.ToString() + ", Cia_Disponible, CEVIC, Modelo, CveMarca_Cia, CveTipo_Cia, CveVersion_Cia, CveTrans_Cia, Marca, Tipo, Descripcion)" +
+                                        "VALUES ('" +
+                                        cveCo + "', '" +
+                                        numCia.ToString() + "| ', '" +
+                                        cveCEVIC + "', '" +
+                                        Mod +
+                                        "', '', '', '', '', '" +
+                                        READER_SD["Marca"].ToString() + "', '" +
+                                        READER_SD["Tipo"].ToString() + "', '" +
+                                        READER_SD["DescripTSM"].ToString() + "')";
+
+                                doQuery(myQuery
+                                    ,
+                                    MyConnString
+                                );
+
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.ToString());
+                            }
+                            break;
+                        // Match Exitoso, Insercion de Referencia
+                        default:
+                            if (MResult[i] >= 0 && MResult[i] <= DT_Std.Rows.Count)
+                            {
+                                OleDbConnection CONNECT_NR = new OleDbConnection(MyConnString);
+                                CONNECT_NR.Open();
+                                // SELECT COUNT (*) FROM DatosEstandarizados WHERE CEVIC LIKE '8514_X??'
+                                OleDbCommand COMMAND_CEVIC = new OleDbCommand("SELECT Cia_Disponible FROM DatosEstandarizados WHERE CEVIC = '" + CEVList.ElementAt(i) + "'", CONNECT_NR);
+                                String cDisp = COMMAND_CEVIC.ExecuteScalar().ToString();
+                                CONNECT_NR.Close();
+
+                                String myQuery = "UPDATE DatosEstandarizados " + 
+                                    "SET Cia_" + numCia.ToString() + " = '" + NEWKList.ElementAt(i) + "'" +
+                                    ", Cia_Disponible = '" + sortDescrip(cDisp.Trim() + " " + numCia.ToString() + "| ' ", false) +
+                                    "WHERE CEVIC = '" + CEVList.ElementAt(i) +  "'" +
+                                    "AND Modelo = " + READER_SD["Modelo"].ToString();
+                   
+                                doQuery(myQuery
+                                    ,
+                                    MyConnString
+                                );
+                                 
+                            } else {
+                                MessageBox.Show("La has liado, tío", "Error");
+                            }
+                            break;
+                    }
+                }
+     
                 READER_SD.Close();
                 CONNECT_SD.Close();
             }
@@ -1124,131 +774,189 @@ namespace HomEstand_App
             return Tuple.Create(-1, -1);
         }
 
-        public int[] evMatModels(DataTable DT_Std, DataTable DT_New) 
+        public int[] evMatModels(DataTable DT_Std, DataTable DT_New, Double evAccuracy) 
         {
             // JaroWinkler Object
             var Jw = new JaroWinkler();
 
-            int[] Result = new int[DT_New.Rows.Count];
-
-            double [,] MatSimDes =  new double[DT_New.Rows.Count, DT_Std.Rows.Count];
+            // Matriz que almacena los coeficientes de similaridad de la descripcion simple
+            double [,] MatSimD =  new double[DT_New.Rows.Count, DT_Std.Rows.Count];
+            // Matriz que almacena el número de campos que los modelos tienen en común
             int [,] MatSimF =  new int[DT_New.Rows.Count, DT_Std.Rows.Count];
 
-            int StdCount = 0;
-            foreach(DataRow RowSModel in DT_Std.Rows) {
-                int NewCount = 0;
-                foreach(DataRow RowNModel in DT_New.Rows) {
-                    // Transmission
-                    if(equalDescrip(RowNModel.Field<String>(0), RowSModel.Field<String>(0)) || 
-                        RowNModel.Field<String>(0).Length == 0) {
-                        MatSimF[StdCount, NewCount]++;
+            int NewCount = 0;
+            foreach (DataRow RowNModel in DT_New.Rows) {
+                int StdCount = 0;
+                foreach (DataRow RowSModel in DT_Std.Rows) {
+                    // Transmision
+                    if(eqDescrip(RowNModel.Field<String>(0), RowSModel.Field<String>(0)) || // Mismo valor para el campo
+                        RowSModel.Field<String>(0).Length == 0 || // El registro estandarizado carece de valor para el campo
+                        Jw.GetSimilarity(RowNModel.Field<String>(0), RowSModel.Field<String>(0)) > evAccuracy) // Alta similaridad en el campo
+                    {
+                        MatSimF[NewCount, StdCount]++;
                     }
-                    // Gearbox
-                    if(equalDescrip(RowNModel.Field<String>(1), RowSModel.Field<String>(1)) || 
-                        RowNModel.Field<String>(1).Length == 0) {
-                        MatSimF[StdCount, NewCount]++;
+                    // Gearbox | Caja de Cambios
+                    if(eqDescrip(RowNModel.Field<String>(1), RowSModel.Field<String>(1)) ||
+                        RowNModel.Field<String>(1).Length == 0 || // El registro estandarizado carece de valor para el campo
+                        Jw.GetSimilarity(RowNModel.Field<String>(1), RowSModel.Field<String>(1)) > evAccuracy) 
+                    {
+                        MatSimF[NewCount, StdCount]++;
                     }
-                    // Cylinders
-                    if(equalDescrip(RowNModel.Field<String>(2), RowSModel.Field<String>(2)) || 
-                        RowNModel.Field<String>(2).Length == 0) {
-                        MatSimF[StdCount, NewCount]++;
+                    // Cilindros
+                    if(eqDescrip(RowNModel.Field<String>(2), RowSModel.Field<String>(2)) ||
+                        RowSModel.Field<String>(2).Length == 0 || // El registro estandarizado carece de valor para el campo
+                        Jw.GetSimilarity(RowNModel.Field<String>(2), RowSModel.Field<String>(2)) > evAccuracy)
+                    {
+                        MatSimF[NewCount, StdCount]++;
                     }
-                    // Passengers
-                    if(equalDescrip(RowNModel.Field<String>(3), RowSModel.Field<String>(3)) || 
-                        RowNModel.Field<String>(3).Length == 0) {
-                        MatSimF[StdCount, NewCount]++;
+                    // Pasajeros
+                    if(eqDescrip(RowNModel.Field<String>(3), RowSModel.Field<String>(3)) || 
+                        RowSModel.Field<String>(3).Length == 0 || // El registro estandarizado carece de valor para el campo
+                        Jw.GetSimilarity(RowNModel.Field<String>(3), RowSModel.Field<String>(3)) > evAccuracy)
+                    {
+                        MatSimF[NewCount, StdCount]++;
                     }
-                    // Doors
-                    if(equalDescrip(RowNModel.Field<String>(4), RowSModel.Field<String>(4)) || 
-                        RowNModel.Field<String>(4).Length == 0) {
-                        MatSimF[StdCount, NewCount]++;
+                    // Puertas
+                    if(eqDescrip(RowNModel.Field<String>(4), RowSModel.Field<String>(4)) ||
+                        RowSModel.Field<String>(4).Length == 0 || // El registro estandarizado carece de valor para el campo
+                        Jw.GetSimilarity(RowNModel.Field<String>(4), RowSModel.Field<String>(4)) > evAccuracy)
+                    {
+                        MatSimF[NewCount, StdCount]++;
                     }
-                    // Brakes
-                    if(equalDescrip(RowNModel.Field<String>(5), RowSModel.Field<String>(5)) || 
-                        RowNModel.Field<String>(5).Length == 0) {
-                        MatSimF[StdCount, NewCount]++;
+                    // Frenos
+                    if(eqDescrip(RowNModel.Field<String>(5), RowSModel.Field<String>(5)) ||
+                        RowSModel.Field<String>(5).Length == 0 || // El registro estandarizado carece de valor para el campo
+                        Jw.GetSimilarity(RowNModel.Field<String>(5), RowSModel.Field<String>(5)) > evAccuracy)
+                    {
+                        MatSimF[NewCount, StdCount]++;
                     }
-                    // Vest
-                    if(equalDescrip(RowNModel.Field<String>(6), RowSModel.Field<String>(6)) || 
-                        RowNModel.Field<String>(6).Length == 0) {
-                        MatSimF[StdCount, NewCount]++;
+                    // Vestiduras
+                    if(eqDescrip(RowNModel.Field<String>(6), RowSModel.Field<String>(6)) ||
+                        RowSModel.Field<String>(6).Length == 0 || // El registro estandarizado carece de valor para el campo
+                        Jw.GetSimilarity(RowNModel.Field<String>(6), RowSModel.Field<String>(6)) > evAccuracy)
+                    {
+                        MatSimF[NewCount, StdCount]++;
                     }
-                    // Sound
-                    if(equalDescrip(RowNModel.Field<String>(7), RowSModel.Field<String>(7)) || 
-                        RowNModel.Field<String>(7).Length == 0) {
-                        MatSimF[StdCount, NewCount]++;
+                    // Sonido
+                    if(eqDescrip(RowNModel.Field<String>(7), RowSModel.Field<String>(7)) ||
+                        RowSModel.Field<String>(7).Length == 0 || // El registro estandarizado carece de valor para el campo
+                        Jw.GetSimilarity(RowNModel.Field<String>(7), RowSModel.Field<String>(7)) > evAccuracy)
+                    {
+                        MatSimF[NewCount, StdCount]++;
                     }
-                    // Equipment
-                    if(equalDescrip(RowNModel.Field<String>(8), RowSModel.Field<String>(8)) || 
-                        RowNModel.Field<String>(8).Length == 0) {
-                        MatSimF[StdCount, NewCount]++;
+                    // Equipamiento
+                    if(eqDescrip(RowNModel.Field<String>(8), RowSModel.Field<String>(8)) ||
+                        RowSModel.Field<String>(8).Length == 0 || // El registro estandarizado carece de valor para el campo
+                        Jw.GetSimilarity(RowNModel.Field<String>(8), RowSModel.Field<String>(8)) > evAccuracy)
+                    {
+                        MatSimF[NewCount, StdCount]++;
                     }
-                    // Air
-                    if(equalDescrip(RowNModel.Field<String>(9), RowSModel.Field<String>(9)) || 
-                        RowNModel.Field<String>(9).Length == 0) {
-                        MatSimF[StdCount, NewCount]++;
+                    // Aire
+                    if(eqDescrip(RowNModel.Field<String>(9), RowSModel.Field<String>(9)) ||
+                        RowSModel.Field<String>(9).Length == 0 || // El registro estandarizado carece de valor para el campo
+                        Jw.GetSimilarity(RowNModel.Field<String>(9), RowSModel.Field<String>(9)) > evAccuracy)
+                    {
+                        MatSimF[NewCount, StdCount]++;
                     }
-                    // AirBag
-                    if(equalDescrip(RowNModel.Field<String>(10), RowSModel.Field<String>(10)) || 
-                        RowNModel.Field<String>(10).Length == 0) {
-                        MatSimF[StdCount, NewCount]++;
+                    // Bolsa de Aire
+                    if(eqDescrip(RowNModel.Field<String>(10), RowSModel.Field<String>(10)) ||
+                        RowSModel.Field<String>(10).Length == 0 || // El registro estandarizado carece de valor para el campo
+                        Jw.GetSimilarity(RowNModel.Field<String>(10), RowSModel.Field<String>(10)) > evAccuracy)
+                    {
+                        MatSimF[NewCount, StdCount]++;
                     }
                     // QC
-                    if(equalDescrip(RowNModel.Field<String>(11), RowSModel.Field<String>(11)) || 
-                        RowNModel.Field<String>(11).Length == 0) {
-                        MatSimF[StdCount, NewCount]++;
+                    if(eqDescrip(RowNModel.Field<String>(11), RowSModel.Field<String>(11)) ||
+                        RowSModel.Field<String>(11).Length == 0 || // El registro estandarizado carece de valor para el campo
+                        Jw.GetSimilarity(RowNModel.Field<String>(11), RowSModel.Field<String>(11)) > evAccuracy)
+                    {
+                        MatSimF[NewCount, StdCount]++;
                     }
-
-                    MatSimDes[StdCount, NewCount] = 
+                    // Descripcion Simple
+                    MatSimD[NewCount, StdCount] = 
+                        // Verificando si el modelo estandarizado contiene Descripcion Simple
                         (RowSModel.Field<String>(12).Length > 0 ) ?  
-                            Jw.GetSimilarity(sortDescrip(RowNModel.Field<String>(12)), 
-                                sortDescrip(RowSModel.Field<String>(12))) 
+                            Math.Max( 
+                                Math.Max(  
+                                    // Descripcion ordenada alfabeticamente
+                                    Jw.GetSimilarity(sortDescrip(RowNModel.Field<String>(12), false), 
+                                        sortDescrip(RowSModel.Field<String>(12), false)),
+                                    // Descripcion ordenada inversamente
+                                    Jw.GetSimilarity(sortDescrip(RowNModel.Field<String>(12), true),
+                                        sortDescrip(RowSModel.Field<String>(12), true))
+                                     ),
+                                // Descripcion por defecto
+                                Jw.GetSimilarity(RowNModel.Field<String>(12),
+                                        RowSModel.Field<String>(12))
+                                )
                             :
+                            // Si la descripcion estandarizada está vacía, son compatibles
                             0.7;
-
-                    NewCount++;
+                    StdCount++;
                 }
-                StdCount++;
-            }
-                
-            for (int i = 0; i < DT_Std.Rows.Count; i++) {
-                // Get MAX AND EVALUATE 
-                for(int j = 0; j < DT_Std.Rows.Count; i++) {
-                    
-                }
-
+                NewCount++;
             }
 
-            double Max;
+            // Vector de resultados
+            // -2: El modelo no ha sido evaluado
+            // -1: El modelo no tiene equivalencia
+            // N: Match con N (N >= 0)
+            int[] Result = new int[DT_New.Rows.Count];
+            for (int i = 0; i < DT_New.Rows.Count; i++)
+            {
+                Result[i] = -2;
+            }
+
+            // Valor Maximo obtenido para cada modelo
+            Double Max;
+            Tuple<int, int> posMax;
+
             do
             {
-                Max = MatSimDes.Cast<double>().Max();
+                // Obteniendo coeficiente Maximo
+                Max = MatSimD.Cast<Double>().Max();
+                // Obteniendo Posicion del coeficiente Maximo
+                posMax = getIndex(MatSimD, Max);
 
+                if (Max > evAccuracy)
+                {
+                    // Campos compatibles, Match resuelto
+                    if (MatSimF[posMax.Item1, posMax.Item2] >= Convert.ToInt32(evAccuracy * 12))
+                    {
+                        for (int j = 0; j < DT_Std.Rows.Count; j++)
+                        {
+                            MatSimD[posMax.Item1, j] = 0;
+                        }
+                        for (int i = 0; i < DT_New.Rows.Count; i++)
+                        {
+                            MatSimD[i, posMax.Item2] = 0;
+                        }
 
-            } while (Max > 0);
-
-            // PROVI
-            int [] X = { 1, 2 };
-            return X;
-
-            ////////////////////////////////////////////////////////////
-            
-            /*
-            int bestMatch = 0;
-            for (int i = 0; i < MatchF.Length; i++) {
-                if (i == 0) {
-                    MatchD[i] = 0.7;
-                    MatchF[i] = 6;
+                        Result[posMax.Item1] = posMax.Item2;
+                    }
+                    // Campos incompatibles, Match no completado
+                    else
+                    {
+                        MatSimF[posMax.Item1, posMax.Item2] = 0;
+                    }
                 }
+                // Descripcion Simple no compatible
                 else
                 {
-                    if (MatchF[i] > MatchF[bestMatch] && MatchD[i] > MatchD[bestMatch])
-                        bestMatch = i;
-                }
-            }
+                    MatSimF[posMax.Item1, posMax.Item2] = 0;
+                    Result[posMax.Item1] = -1;
 
-            return bestMatch = (MatchF[bestMatch] > 7 && MatchD[bestMatch] > 0.7) ? bestMatch : 0;
-        */
+                    /*
+                    for (int i = 0; i < DT_Std.Rows.Count; i++ )
+                    {
+                        if (!Result.Contains(i)) { 
+                            
+                        }
+                    }*/
+                }
+            } while (Result.Contains(-2));
+            
+            return Result;
            }
 
 

@@ -12,3 +12,5 @@ C:\Users\Griselda\Documents\Visual Studio 2010\Projects\HomEstand_App\HomEstand_
 C:\Users\Griselda\Documents\Visual Studio 2010\Projects\HomEstand_App\HomEstand_App\obj\x86\Debug\HomEstand_App.Form1.resources
 C:\Users\Griselda\Documents\Visual Studio 2010\Projects\HomEstand_App\HomEstand_App\obj\x86\Debug\HomEstand_App.Properties.Resources.resources
 C:\Users\Griselda\Documents\Visual Studio 2010\Projects\HomEstand_App\HomEstand_App\obj\x86\Debug\HomEstand_App.csproj.GenerateResource.Cache
+C:\Users\Griselda\Documents\Visual Studio 2010\Projects\HomEstand_App\HomEstand_App\obj\x86\Debug\HomEstand_App.csprojResolveAssemblyReference.cache
+C:\Users\Griselda\Documents\Visual Studio 2010\Projects\HomEstand_App\HomEstand_App\bin\Debug\SimMetrics.dll
