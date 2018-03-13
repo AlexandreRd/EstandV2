@@ -452,7 +452,7 @@ namespace HomEstand_App
                         CONNECT_STD.Open();
                         OleDbCommand COMMAND_STD = new OleDbCommand("SELECT * FROM DatosEstandarizados WHERE CEVIC IN (" +
                             "SELECT MyCEVICPool FROM (" +
-                                "SELECT IIF([Cia_" + numCia.ToString() + "] Is Null, 'unavailable', Cia_" + numCia.ToString() + "]) AS MyCIA, CEVIC AS MyCEVICPool " +
+                                "SELECT IIF([Cia_" + numCia.ToString() + "] Is Null, 'unavailable', [Cia_" + numCia.ToString() + "]) AS MyCIA, CEVIC AS MyCEVICPool " +
                                 "FROM DatosEstandarizados WHERE " +
                                 "Marca = '" + READER_SD["Marca"].ToString() +
                                 "' AND Tipo = '" + READER_SD["Tipo"].ToString() +
