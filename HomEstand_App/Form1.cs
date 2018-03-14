@@ -162,7 +162,7 @@ namespace HomEstand_App
             //MessageBox.Show(Resources.Cias_WS);
 
             //CIAToStand(2, "QUALITAS", 0.7);
-            CIAToStand(21, "AFIRME", 0.7);
+            //CIAToStand(21, "AFIRME", 0.7);
         }
 
         // EJECUTAR CONSULTA
