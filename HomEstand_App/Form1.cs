@@ -1617,7 +1617,7 @@ namespace HomEstand_App
                     while (READER.Read())
                     {
                         String x;
-                        if (Campo == "DescripSimple") {
+                        if (Campo != "DescripSimple") {
                             x = " " + READER["DescripSimple"].ToString().Trim() + " ";
                             String y = READER[Campo].ToString();
                             if (x.Contains(Acro))
