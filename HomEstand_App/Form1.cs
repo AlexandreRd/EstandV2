@@ -1623,7 +1623,7 @@ namespace HomEstand_App
                             if (x.Contains(Acro))
                             {
                                 x = x.Replace(Acro, " ");
-                                y = (y.Length > 0) ? y + " " + nAcro : nAcro;
+                                y = (!y.Contains(nAcro)) ? y + " " + nAcro : nAcro;
 
                                 if (Tipo == "noTipo")
                                 {
