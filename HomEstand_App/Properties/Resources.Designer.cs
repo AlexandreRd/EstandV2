@@ -22,7 +22,7 @@ namespace HomEstand_App.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace HomEstand_App.Properties {
         ///   Devuelve la instancia de ResourceManager almacenada en caché utilizada por esta clase.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HomEstand_App.Properties.Resources", typeof(Resources).Assembly);
@@ -51,12 +51,48 @@ namespace HomEstand_App.Properties {
         ///   búsquedas de recursos mediante esta clase de recurso fuertemente tipado.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a IDCia,Nombre,Abreviacion
+        ///1,,GNP
+        ///2,,QUALITAS
+        ///3,,AXA
+        ///4,,SURA
+        ///5,,ANA
+        ///6,,GMX
+        ///7,,ABA
+        ///8,,MAPFRE
+        ///9,,INTERACCIONES
+        ///10,,BANORTE
+        ///11,,MTY AETNA
+        ///12,,ZURICH
+        ///13,,BUPA
+        ///14,,PRIMERO
+        ///15,,CHARTIS
+        ///16,,INBURSA
+        ///17,,ACE MTY
+        ///18,,ASERTA
+        ///19,,INSURGENTES
+        ///20,,HDI
+        ///21,,AFIRME
+        ///22,,AGUILA
+        ///23,,ATLAS
+        ///24,,LATINO
+        ///25,,MULTIVA
+        ///26,,GENERAL
+        ///.
+        /// </summary>
+        public static string Cias_WS {
+            get {
+                return ResourceManager.GetString("Cias_WS", resourceCulture);
             }
         }
     }

@@ -32,13 +32,52 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.cmb_NMarca = new System.Windows.Forms.ComboBox();
+            this.chk_TDSimple = new System.Windows.Forms.CheckBox();
+            this.btn_CambiarMarca = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.btn_CambiarTipo = new System.Windows.Forms.Button();
+            this.txt_NTipo = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.cmb_Tipo0 = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.chk_AcDSimple0 = new System.Windows.Forms.CheckBox();
+            this.txt_NAcr0 = new System.Windows.Forms.TextBox();
+            this.cmb_NAcr = new System.Windows.Forms.ComboBox();
+            this.btn_EliminarAcroGen = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txt_Acr0 = new System.Windows.Forms.TextBox();
+            this.btn_CambiarAcroGen = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
+            this.cmb_Campo0 = new System.Windows.Forms.ComboBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.chk_AcTipo = new System.Windows.Forms.CheckBox();
+            this.chk_AcDSimple1 = new System.Windows.Forms.CheckBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.txt_NAcr1 = new System.Windows.Forms.TextBox();
+            this.cmb_Campo1 = new System.Windows.Forms.ComboBox();
+            this.btnEliminarAcroMar = new System.Windows.Forms.Button();
+            this.label10 = new System.Windows.Forms.Label();
+            this.txt_Acr1 = new System.Windows.Forms.TextBox();
+            this.btn_CambiarAcroMar = new System.Windows.Forms.Button();
+            this.label11 = new System.Windows.Forms.Label();
+            this.cmb_Tipo1 = new System.Windows.Forms.ComboBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.nu_Precision = new System.Windows.Forms.NumericUpDown();
+            this.btn_AgregarCiaHom = new System.Windows.Forms.Button();
+            this.btn_GenerarTablaSTD = new System.Windows.Forms.Button();
+            this.label16 = new System.Windows.Forms.Label();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.txtTest1 = new System.Windows.Forms.TextBox();
             this.btnTest1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -46,47 +85,12 @@
             this.cmb_Marca = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.textBox6 = new System.Windows.Forms.TextBox();
+            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.btnRInfo = new System.Windows.Forms.Button();
             this.txt_CiaID = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.label6 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.button3 = new System.Windows.Forms.Button();
-            this.label7 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.button4 = new System.Windows.Forms.Button();
-            this.label8 = new System.Windows.Forms.Label();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
-            this.comboBox4 = new System.Windows.Forms.ComboBox();
-            this.button5 = new System.Windows.Forms.Button();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.button6 = new System.Windows.Forms.Button();
-            this.label10 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button7 = new System.Windows.Forms.Button();
-            this.label11 = new System.Windows.Forms.Label();
-            this.comboBox6 = new System.Windows.Forms.ComboBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.comboBox7 = new System.Windows.Forms.ComboBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.button8 = new System.Windows.Forms.Button();
-            this.button9 = new System.Windows.Forms.Button();
-            this.label16 = new System.Windows.Forms.Label();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.textBox5 = new System.Windows.Forms.TextBox();
-            this.textBox6 = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -95,12 +99,12 @@
             this.tabPage3.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.tabPage4.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nu_Precision)).BeginInit();
             this.tabPage5.SuspendLayout();
             this.tabPage6.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.groupBox5.SuspendLayout();
             this.groupBox7.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -131,14 +135,14 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.comboBox3);
-            this.groupBox4.Controls.Add(this.checkBox1);
-            this.groupBox4.Controls.Add(this.button2);
+            this.groupBox4.Controls.Add(this.cmb_NMarca);
+            this.groupBox4.Controls.Add(this.chk_TDSimple);
+            this.groupBox4.Controls.Add(this.btn_CambiarMarca);
             this.groupBox4.Controls.Add(this.label6);
-            this.groupBox4.Controls.Add(this.button1);
-            this.groupBox4.Controls.Add(this.textBox1);
+            this.groupBox4.Controls.Add(this.btn_CambiarTipo);
+            this.groupBox4.Controls.Add(this.txt_NTipo);
             this.groupBox4.Controls.Add(this.label5);
-            this.groupBox4.Controls.Add(this.comboBox1);
+            this.groupBox4.Controls.Add(this.cmb_Tipo0);
             this.groupBox4.Controls.Add(this.label4);
             this.groupBox4.Location = new System.Drawing.Point(6, 6);
             this.groupBox4.Name = "groupBox4";
@@ -146,6 +150,160 @@
             this.groupBox4.TabIndex = 0;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Sustituir el Tipo; Sustituir la Marca con base en el Tipo.";
+            // 
+            // cmb_NMarca
+            // 
+            this.cmb_NMarca.FormattingEnabled = true;
+            this.cmb_NMarca.Items.AddRange(new object[] {
+            "ACURA",
+            "ALFA ROMEO",
+            "ASTON MARTIN",
+            "AUDI",
+            "BAIC",
+            "BENTLEY",
+            "BMW",
+            "BUICK",
+            "CADILLAC",
+            "CHANGAN",
+            "CBO TRUCKS",
+            "CHEVROLET",
+            "CHRYSLER",
+            "DAEWOO",
+            "DINA",
+            "DODGE",
+            "FAW",
+            "FERRARI",
+            "FIAT",
+            "FORD",
+            "GEO",
+            "GIANT MOTORS",
+            "GMC",
+            "HINO",
+            "HONDA",
+            "HUMMER",
+            "HYUNDAI",
+            "INFINITI",
+            "ISUZU",
+            "JAC",
+            "JAGUAR",
+            "JEEP",
+            "KIA",
+            "LAMBORGHINI",
+            "LAND ROVER",
+            "LEXUS",
+            "LINCOLN",
+            "LOTUS",
+            "MASERATI",
+            "MASTRETTA",
+            "MAYBACH",
+            "MAZDA",
+            "MCLAREN",
+            "MERCEDES BENZ",
+            "MERCURY",
+            "MG",
+            "MINI",
+            "MITSUBISHI",
+            "MORGAN",
+            "NISSAN",
+            "OLDSMOBILE",
+            "PEUGEOT",
+            "PIAGGIO",
+            "PONTIAC",
+            "PORSCHE",
+            "RENAULT",
+            "ROLLS ROYCE",
+            "ROVER",
+            "SAAB",
+            "SEAT",
+            "SMART",
+            "SSANGYONG",
+            "STARVIA",
+            "SUBARU",
+            "SUZUKI",
+            "TATA MOTORS",
+            "TESLA",
+            "TOYOTA",
+            "VAM",
+            "VALIANT",
+            "VOLKSWAGEN",
+            "VOLVO",
+            "VUHL"});
+            this.cmb_NMarca.Location = new System.Drawing.Point(135, 112);
+            this.cmb_NMarca.Name = "cmb_NMarca";
+            this.cmb_NMarca.Size = new System.Drawing.Size(159, 21);
+            this.cmb_NMarca.TabIndex = 3;
+            // 
+            // chk_TDSimple
+            // 
+            this.chk_TDSimple.AutoSize = true;
+            this.chk_TDSimple.Location = new System.Drawing.Point(369, 36);
+            this.chk_TDSimple.Name = "chk_TDSimple";
+            this.chk_TDSimple.Size = new System.Drawing.Size(82, 30);
+            this.chk_TDSimple.TabIndex = 4;
+            this.chk_TDSimple.Text = "Tipo en\r\nDescripción\r\n";
+            this.chk_TDSimple.UseVisualStyleBackColor = true;
+            // 
+            // btn_CambiarMarca
+            // 
+            this.btn_CambiarMarca.Location = new System.Drawing.Point(369, 127);
+            this.btn_CambiarMarca.Name = "btn_CambiarMarca";
+            this.btn_CambiarMarca.Size = new System.Drawing.Size(101, 43);
+            this.btn_CambiarMarca.TabIndex = 6;
+            this.btn_CambiarMarca.Text = "Sustituir Marca";
+            this.btn_CambiarMarca.UseVisualStyleBackColor = true;
+            this.btn_CambiarMarca.Click += new System.EventHandler(this.btn_CambiarMarca_Click);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(27, 115);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(75, 13);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "Nueva Marca:";
+            // 
+            // btn_CambiarTipo
+            // 
+            this.btn_CambiarTipo.Location = new System.Drawing.Point(368, 77);
+            this.btn_CambiarTipo.Name = "btn_CambiarTipo";
+            this.btn_CambiarTipo.Size = new System.Drawing.Size(101, 43);
+            this.btn_CambiarTipo.TabIndex = 5;
+            this.btn_CambiarTipo.Text = "Sustituir Tipo";
+            this.btn_CambiarTipo.UseVisualStyleBackColor = true;
+            this.btn_CambiarTipo.Click += new System.EventHandler(this.btn_CambiarTipo_Click);
+            // 
+            // txt_NTipo
+            // 
+            this.txt_NTipo.Location = new System.Drawing.Point(135, 74);
+            this.txt_NTipo.Name = "txt_NTipo";
+            this.txt_NTipo.Size = new System.Drawing.Size(159, 20);
+            this.txt_NTipo.TabIndex = 2;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(27, 77);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(66, 13);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "Nuevo Tipo:";
+            // 
+            // cmb_Tipo0
+            // 
+            this.cmb_Tipo0.FormattingEnabled = true;
+            this.cmb_Tipo0.Location = new System.Drawing.Point(135, 36);
+            this.cmb_Tipo0.Name = "cmb_Tipo0";
+            this.cmb_Tipo0.Size = new System.Drawing.Size(159, 21);
+            this.cmb_Tipo0.TabIndex = 1;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(27, 39);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(31, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Tipo:";
             // 
             // tabPage2
             // 
@@ -160,13 +318,16 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.comboBox4);
-            this.groupBox2.Controls.Add(this.button3);
+            this.groupBox2.Controls.Add(this.label14);
+            this.groupBox2.Controls.Add(this.chk_AcDSimple0);
+            this.groupBox2.Controls.Add(this.txt_NAcr0);
+            this.groupBox2.Controls.Add(this.cmb_NAcr);
+            this.groupBox2.Controls.Add(this.btn_EliminarAcroGen);
             this.groupBox2.Controls.Add(this.label7);
-            this.groupBox2.Controls.Add(this.textBox3);
-            this.groupBox2.Controls.Add(this.button4);
+            this.groupBox2.Controls.Add(this.txt_Acr0);
+            this.groupBox2.Controls.Add(this.btn_CambiarAcroGen);
             this.groupBox2.Controls.Add(this.label8);
-            this.groupBox2.Controls.Add(this.comboBox2);
+            this.groupBox2.Controls.Add(this.cmb_Campo0);
             this.groupBox2.Controls.Add(this.label9);
             this.groupBox2.Location = new System.Drawing.Point(6, 6);
             this.groupBox2.Name = "groupBox2";
@@ -174,7 +335,122 @@
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Sustituir Acrónimo en Descripción Simple; Sustituir Acrónimo en otros Campos; Eli" +
-    "minar Acrónimo";
+    "minar Acrónimo de Descripción Simple.";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(27, 152);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(89, 13);
+            this.label14.TabIndex = 9;
+            this.label14.Text = "Nuevo Acrónimo:";
+            // 
+            // chk_AcDSimple0
+            // 
+            this.chk_AcDSimple0.AutoSize = true;
+            this.chk_AcDSimple0.Location = new System.Drawing.Point(368, 36);
+            this.chk_AcDSimple0.Name = "chk_AcDSimple0";
+            this.chk_AcDSimple0.Size = new System.Drawing.Size(97, 30);
+            this.chk_AcDSimple0.TabIndex = 5;
+            this.chk_AcDSimple0.Text = "Acrónimo\r\nen Descripción";
+            this.chk_AcDSimple0.UseVisualStyleBackColor = true;
+            this.chk_AcDSimple0.CheckedChanged += new System.EventHandler(this.chk_AcDSimple_CheckedChanged);
+            // 
+            // txt_NAcr0
+            // 
+            this.txt_NAcr0.Location = new System.Drawing.Point(135, 149);
+            this.txt_NAcr0.Name = "txt_NAcr0";
+            this.txt_NAcr0.Size = new System.Drawing.Size(200, 20);
+            this.txt_NAcr0.TabIndex = 4;
+            // 
+            // cmb_NAcr
+            // 
+            this.cmb_NAcr.FormattingEnabled = true;
+            this.cmb_NAcr.Location = new System.Drawing.Point(135, 74);
+            this.cmb_NAcr.Name = "cmb_NAcr";
+            this.cmb_NAcr.Size = new System.Drawing.Size(201, 21);
+            this.cmb_NAcr.TabIndex = 2;
+            // 
+            // btn_EliminarAcroGen
+            // 
+            this.btn_EliminarAcroGen.Location = new System.Drawing.Point(368, 127);
+            this.btn_EliminarAcroGen.Name = "btn_EliminarAcroGen";
+            this.btn_EliminarAcroGen.Size = new System.Drawing.Size(101, 43);
+            this.btn_EliminarAcroGen.TabIndex = 7;
+            this.btn_EliminarAcroGen.Text = "Eliminar Acrónimo";
+            this.btn_EliminarAcroGen.UseVisualStyleBackColor = true;
+            this.btn_EliminarAcroGen.Click += new System.EventHandler(this.btn_EliminarAcroGen_Click);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(27, 115);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(54, 13);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "Acrónimo:";
+            // 
+            // txt_Acr0
+            // 
+            this.txt_Acr0.Location = new System.Drawing.Point(135, 112);
+            this.txt_Acr0.Name = "txt_Acr0";
+            this.txt_Acr0.Size = new System.Drawing.Size(201, 20);
+            this.txt_Acr0.TabIndex = 3;
+            // 
+            // btn_CambiarAcroGen
+            // 
+            this.btn_CambiarAcroGen.Location = new System.Drawing.Point(368, 77);
+            this.btn_CambiarAcroGen.Name = "btn_CambiarAcroGen";
+            this.btn_CambiarAcroGen.Size = new System.Drawing.Size(101, 43);
+            this.btn_CambiarAcroGen.TabIndex = 6;
+            this.btn_CambiarAcroGen.Text = "Sustituir Acrónimo";
+            this.btn_CambiarAcroGen.UseVisualStyleBackColor = true;
+            this.btn_CambiarAcroGen.Click += new System.EventHandler(this.btn_CambiarAcroGen_Click);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(27, 77);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(100, 13);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "Acrónimo Genérico:";
+            // 
+            // cmb_Campo0
+            // 
+            this.cmb_Campo0.FormattingEnabled = true;
+            this.cmb_Campo0.Items.AddRange(new object[] {
+            "NPass",
+            "Puertas",
+            "Trans",
+            "Cilindros",
+            "Vestiduras",
+            "Aire",
+            "QC",
+            "Equipado",
+            "EE",
+            "BAire",
+            "Sonido",
+            "ABS",
+            "RA",
+            "FN",
+            "CodRaro",
+            "DH"});
+            this.cmb_Campo0.Location = new System.Drawing.Point(135, 36);
+            this.cmb_Campo0.Name = "cmb_Campo0";
+            this.cmb_Campo0.Size = new System.Drawing.Size(201, 21);
+            this.cmb_Campo0.TabIndex = 1;
+            this.cmb_Campo0.SelectedIndexChanged += new System.EventHandler(this.cmb_Campo0_SelectedIndexChanged);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(27, 39);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(43, 13);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "Campo:";
             // 
             // tabPage3
             // 
@@ -189,16 +465,17 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.checkBox2);
+            this.groupBox3.Controls.Add(this.chk_AcTipo);
+            this.groupBox3.Controls.Add(this.chk_AcDSimple1);
             this.groupBox3.Controls.Add(this.label13);
-            this.groupBox3.Controls.Add(this.textBox4);
-            this.groupBox3.Controls.Add(this.comboBox7);
-            this.groupBox3.Controls.Add(this.button6);
+            this.groupBox3.Controls.Add(this.txt_NAcr1);
+            this.groupBox3.Controls.Add(this.cmb_Campo1);
+            this.groupBox3.Controls.Add(this.btnEliminarAcroMar);
             this.groupBox3.Controls.Add(this.label10);
-            this.groupBox3.Controls.Add(this.textBox2);
-            this.groupBox3.Controls.Add(this.button7);
+            this.groupBox3.Controls.Add(this.txt_Acr1);
+            this.groupBox3.Controls.Add(this.btn_CambiarAcroMar);
             this.groupBox3.Controls.Add(this.label11);
-            this.groupBox3.Controls.Add(this.comboBox6);
+            this.groupBox3.Controls.Add(this.cmb_Tipo1);
             this.groupBox3.Controls.Add(this.label12);
             this.groupBox3.Location = new System.Drawing.Point(6, 6);
             this.groupBox3.Name = "groupBox3";
@@ -206,7 +483,130 @@
             this.groupBox3.TabIndex = 0;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Sustituir Acrónimo en una Marca; Sustituir Acrónimo en una Marca y Tipo; Eliminar" +
-    " Acrónimo";
+    " Acrónimo.";
+            // 
+            // chk_AcTipo
+            // 
+            this.chk_AcTipo.AutoSize = true;
+            this.chk_AcTipo.Location = new System.Drawing.Point(312, 38);
+            this.chk_AcTipo.Name = "chk_AcTipo";
+            this.chk_AcTipo.Size = new System.Drawing.Size(163, 17);
+            this.chk_AcTipo.TabIndex = 8;
+            this.chk_AcTipo.Text = "Acrónimo en Tipo Específico";
+            this.chk_AcTipo.UseVisualStyleBackColor = true;
+            // 
+            // chk_AcDSimple1
+            // 
+            this.chk_AcDSimple1.AutoSize = true;
+            this.chk_AcDSimple1.Location = new System.Drawing.Point(312, 62);
+            this.chk_AcDSimple1.Name = "chk_AcDSimple1";
+            this.chk_AcDSimple1.Size = new System.Drawing.Size(144, 17);
+            this.chk_AcDSimple1.TabIndex = 5;
+            this.chk_AcDSimple1.Text = "Acrónimo en Descripción";
+            this.chk_AcDSimple1.UseVisualStyleBackColor = true;
+            this.chk_AcDSimple1.CheckedChanged += new System.EventHandler(this.chk_AcDSimple1_CheckedChanged);
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(27, 153);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(89, 13);
+            this.label13.TabIndex = 0;
+            this.label13.Text = "Nuevo Acrónimo:";
+            // 
+            // txt_NAcr1
+            // 
+            this.txt_NAcr1.Location = new System.Drawing.Point(145, 150);
+            this.txt_NAcr1.Name = "txt_NAcr1";
+            this.txt_NAcr1.Size = new System.Drawing.Size(190, 20);
+            this.txt_NAcr1.TabIndex = 4;
+            // 
+            // cmb_Campo1
+            // 
+            this.cmb_Campo1.FormattingEnabled = true;
+            this.cmb_Campo1.Items.AddRange(new object[] {
+            "NPass",
+            "Puertas",
+            "Trans",
+            "Cilindros",
+            "Vestiduras",
+            "Aire",
+            "QC",
+            "Equipado",
+            "EE",
+            "BAire",
+            "Sonido",
+            "ABS",
+            "RA",
+            "FN",
+            "CodRaro",
+            "DH"});
+            this.cmb_Campo1.Location = new System.Drawing.Point(96, 74);
+            this.cmb_Campo1.Name = "cmb_Campo1";
+            this.cmb_Campo1.Size = new System.Drawing.Size(190, 21);
+            this.cmb_Campo1.TabIndex = 2;
+            // 
+            // btnEliminarAcroMar
+            // 
+            this.btnEliminarAcroMar.Location = new System.Drawing.Point(368, 138);
+            this.btnEliminarAcroMar.Name = "btnEliminarAcroMar";
+            this.btnEliminarAcroMar.Size = new System.Drawing.Size(101, 42);
+            this.btnEliminarAcroMar.TabIndex = 7;
+            this.btnEliminarAcroMar.Text = "Eliminar Acrónimo";
+            this.btnEliminarAcroMar.UseVisualStyleBackColor = true;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(27, 77);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(43, 13);
+            this.label10.TabIndex = 0;
+            this.label10.Text = "Campo:";
+            // 
+            // txt_Acr1
+            // 
+            this.txt_Acr1.Location = new System.Drawing.Point(145, 112);
+            this.txt_Acr1.Name = "txt_Acr1";
+            this.txt_Acr1.Size = new System.Drawing.Size(190, 20);
+            this.txt_Acr1.TabIndex = 3;
+            // 
+            // btn_CambiarAcroMar
+            // 
+            this.btn_CambiarAcroMar.Location = new System.Drawing.Point(368, 89);
+            this.btn_CambiarAcroMar.Name = "btn_CambiarAcroMar";
+            this.btn_CambiarAcroMar.Size = new System.Drawing.Size(101, 43);
+            this.btn_CambiarAcroMar.TabIndex = 6;
+            this.btn_CambiarAcroMar.Text = "Sustituir Acrónimo";
+            this.btn_CambiarAcroMar.UseVisualStyleBackColor = true;
+            this.btn_CambiarAcroMar.Click += new System.EventHandler(this.btn_CambiarAcroMar_Click);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(27, 115);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(54, 13);
+            this.label11.TabIndex = 0;
+            this.label11.Text = "Acrónimo:";
+            // 
+            // cmb_Tipo1
+            // 
+            this.cmb_Tipo1.FormattingEnabled = true;
+            this.cmb_Tipo1.Location = new System.Drawing.Point(96, 36);
+            this.cmb_Tipo1.Name = "cmb_Tipo1";
+            this.cmb_Tipo1.Size = new System.Drawing.Size(190, 21);
+            this.cmb_Tipo1.TabIndex = 1;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(27, 39);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(31, 13);
+            this.label12.TabIndex = 0;
+            this.label12.Text = "Tipo:";
             // 
             // tabPage4
             // 
@@ -219,6 +619,59 @@
             this.tabPage4.Text = "Procesos de Estandarización";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.nu_Precision);
+            this.groupBox5.Controls.Add(this.btn_AgregarCiaHom);
+            this.groupBox5.Controls.Add(this.btn_GenerarTablaSTD);
+            this.groupBox5.Controls.Add(this.label16);
+            this.groupBox5.Location = new System.Drawing.Point(6, 6);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(496, 191);
+            this.groupBox5.TabIndex = 0;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Generar Tabla Estandarizada para Compañía; Agregar Tabla Estandarizada a Homologa" +
+    "ción General; Generar CEVIC.";
+            // 
+            // nu_Precision
+            // 
+            this.nu_Precision.Location = new System.Drawing.Point(162, 45);
+            this.nu_Precision.Name = "nu_Precision";
+            this.nu_Precision.Size = new System.Drawing.Size(115, 20);
+            this.nu_Precision.TabIndex = 1;
+            this.nu_Precision.Value = new decimal(new int[] {
+            70,
+            0,
+            0,
+            0});
+            // 
+            // btn_AgregarCiaHom
+            // 
+            this.btn_AgregarCiaHom.Location = new System.Drawing.Point(322, 101);
+            this.btn_AgregarCiaHom.Name = "btn_AgregarCiaHom";
+            this.btn_AgregarCiaHom.Size = new System.Drawing.Size(147, 49);
+            this.btn_AgregarCiaHom.TabIndex = 3;
+            this.btn_AgregarCiaHom.Text = "Agregar a Homologación\r\n";
+            this.btn_AgregarCiaHom.UseVisualStyleBackColor = true;
+            // 
+            // btn_GenerarTablaSTD
+            // 
+            this.btn_GenerarTablaSTD.Location = new System.Drawing.Point(322, 39);
+            this.btn_GenerarTablaSTD.Name = "btn_GenerarTablaSTD";
+            this.btn_GenerarTablaSTD.Size = new System.Drawing.Size(147, 49);
+            this.btn_GenerarTablaSTD.TabIndex = 2;
+            this.btn_GenerarTablaSTD.Text = "Generar Tabla Estandarizada\r\n";
+            this.btn_GenerarTablaSTD.UseVisualStyleBackColor = true;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(27, 39);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(108, 26);
+            this.label16.TabIndex = 0;
+            this.label16.Text = "Porcentaje de \r\nTolerancia/Precisión:\r\n";
+            // 
             // tabPage5
             // 
             this.tabPage5.Controls.Add(this.groupBox6);
@@ -230,6 +683,16 @@
             this.tabPage5.Text = "Base de Datos";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
+            // groupBox6
+            // 
+            this.groupBox6.Location = new System.Drawing.Point(6, 6);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(496, 191);
+            this.groupBox6.TabIndex = 1;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Generar Set de Tablas para Compañía (D_COMP, EST_COMP); Eliminar Registros de Tab" +
+    "la Estandarizada.";
+            // 
             // tabPage6
             // 
             this.tabPage6.Controls.Add(this.groupBox7);
@@ -240,6 +703,17 @@
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Campo de Pruebas";
             this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.txtTest1);
+            this.groupBox7.Controls.Add(this.btnTest1);
+            this.groupBox7.Location = new System.Drawing.Point(6, 6);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(496, 191);
+            this.groupBox7.TabIndex = 1;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Área de Desarrollo";
             // 
             // txtTest1
             // 
@@ -270,11 +744,19 @@
             // cmb_Cia
             // 
             this.cmb_Cia.FormattingEnabled = true;
+            this.cmb_Cia.Items.AddRange(new object[] {
+            "ABA",
+            "AFIRME",
+            "ANA",
+            "GENERAL",
+            "HDI",
+            "QUALITAS",
+            "ZURICH"});
             this.cmb_Cia.Location = new System.Drawing.Point(74, 29);
             this.cmb_Cia.Name = "cmb_Cia";
             this.cmb_Cia.Size = new System.Drawing.Size(121, 21);
             this.cmb_Cia.TabIndex = 1;
-            this.cmb_Cia.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            this.cmb_Cia.SelectedIndexChanged += new System.EventHandler(this.cmb_Cia_SelectedIndexChanged);
             // 
             // cmb_Marca
             // 
@@ -283,6 +765,7 @@
             this.cmb_Marca.Name = "cmb_Marca";
             this.cmb_Marca.Size = new System.Drawing.Size(122, 21);
             this.cmb_Marca.TabIndex = 2;
+            this.cmb_Marca.SelectedIndexChanged += new System.EventHandler(this.cmb_Marca_SelectedIndexChanged);
             // 
             // label2
             // 
@@ -296,7 +779,7 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.groupBox8);
-            this.groupBox1.Controls.Add(this.button5);
+            this.groupBox1.Controls.Add(this.btnRInfo);
             this.groupBox1.Controls.Add(this.txt_CiaID);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.cmb_Cia);
@@ -310,6 +793,45 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Navegación";
             // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.textBox6);
+            this.groupBox8.Controls.Add(this.textBox5);
+            this.groupBox8.Location = new System.Drawing.Point(361, 19);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(137, 70);
+            this.groupBox8.TabIndex = 0;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "Progreso de Operación";
+            // 
+            // textBox6
+            // 
+            this.textBox6.Enabled = false;
+            this.textBox6.Location = new System.Drawing.Point(13, 43);
+            this.textBox6.Name = "textBox6";
+            this.textBox6.ReadOnly = true;
+            this.textBox6.Size = new System.Drawing.Size(102, 20);
+            this.textBox6.TabIndex = 0;
+            // 
+            // textBox5
+            // 
+            this.textBox5.Enabled = false;
+            this.textBox5.Location = new System.Drawing.Point(13, 18);
+            this.textBox5.Name = "textBox5";
+            this.textBox5.ReadOnly = true;
+            this.textBox5.Size = new System.Drawing.Size(102, 20);
+            this.textBox5.TabIndex = 0;
+            // 
+            // btnRInfo
+            // 
+            this.btnRInfo.Location = new System.Drawing.Point(216, 56);
+            this.btnRInfo.Name = "btnRInfo";
+            this.btnRInfo.Size = new System.Drawing.Size(129, 23);
+            this.btnRInfo.TabIndex = 3;
+            this.btnRInfo.Text = "Refrescar";
+            this.btnRInfo.UseVisualStyleBackColor = true;
+            this.btnRInfo.Click += new System.EventHandler(this.btnRInfo_Click);
+            // 
             // txt_CiaID
             // 
             this.txt_CiaID.Enabled = false;
@@ -318,6 +840,7 @@
             this.txt_CiaID.ReadOnly = true;
             this.txt_CiaID.Size = new System.Drawing.Size(52, 20);
             this.txt_CiaID.TabIndex = 0;
+            this.txt_CiaID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // label3
             // 
@@ -327,358 +850,6 @@
             this.label3.Size = new System.Drawing.Size(74, 13);
             this.label3.TabIndex = 0;
             this.label3.Text = "Compañía Nº:";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(27, 39);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(31, 13);
-            this.label4.TabIndex = 0;
-            this.label4.Text = "Tipo:";
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(118, 36);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(133, 21);
-            this.comboBox1.TabIndex = 1;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(27, 77);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(66, 13);
-            this.label5.TabIndex = 0;
-            this.label5.Text = "Nuevo Tipo:";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(118, 74);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(133, 20);
-            this.textBox1.TabIndex = 3;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(377, 36);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(92, 43);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "Sustituir Tipo";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(27, 115);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(75, 13);
-            this.label6.TabIndex = 0;
-            this.label6.Text = "Nueva Marca:";
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(377, 89);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(92, 42);
-            this.button2.TabIndex = 6;
-            this.button2.Text = "Sustituir Marca";
-            this.button2.UseVisualStyleBackColor = true;
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(273, 31);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(82, 30);
-            this.checkBox1.TabIndex = 2;
-            this.checkBox1.Text = "Tipo en\r\nDescripción\r\n";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(368, 88);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(101, 42);
-            this.button3.TabIndex = 5;
-            this.button3.Text = "Eliminar Acrónimo";
-            this.button3.UseVisualStyleBackColor = true;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(27, 77);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(54, 13);
-            this.label7.TabIndex = 0;
-            this.label7.Text = "Acrónimo:";
-            // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(134, 74);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(133, 20);
-            this.textBox3.TabIndex = 2;
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(368, 35);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(101, 43);
-            this.button4.TabIndex = 4;
-            this.button4.Text = "Sustituir Acrónimo";
-            this.button4.UseVisualStyleBackColor = true;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(27, 115);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(101, 13);
-            this.label8.TabIndex = 0;
-            this.label8.Text = "Acrónimo a Insertar:";
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(134, 36);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(133, 21);
-            this.comboBox2.TabIndex = 1;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(27, 39);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(43, 13);
-            this.label9.TabIndex = 0;
-            this.label9.Text = "Campo:";
-            // 
-            // comboBox3
-            // 
-            this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(118, 112);
-            this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(133, 21);
-            this.comboBox3.TabIndex = 4;
-            // 
-            // comboBox4
-            // 
-            this.comboBox4.FormattingEnabled = true;
-            this.comboBox4.Location = new System.Drawing.Point(134, 112);
-            this.comboBox4.Name = "comboBox4";
-            this.comboBox4.Size = new System.Drawing.Size(133, 21);
-            this.comboBox4.TabIndex = 3;
-            // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(216, 56);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(129, 23);
-            this.button5.TabIndex = 3;
-            this.button5.Text = "Actualizar Info.";
-            this.button5.UseVisualStyleBackColor = true;
-            // 
-            // groupBox5
-            // 
-            this.groupBox5.Controls.Add(this.numericUpDown1);
-            this.groupBox5.Controls.Add(this.button8);
-            this.groupBox5.Controls.Add(this.button9);
-            this.groupBox5.Controls.Add(this.label16);
-            this.groupBox5.Location = new System.Drawing.Point(6, 6);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(496, 191);
-            this.groupBox5.TabIndex = 0;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Generar Tabla Estandarizada para Compañía; Agregar Tabla Estandarizada a Homologa" +
-    "ción General; Generar CEVIC";
-            // 
-            // groupBox6
-            // 
-            this.groupBox6.Location = new System.Drawing.Point(6, 6);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(496, 191);
-            this.groupBox6.TabIndex = 1;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Generar Set de Tablas para Compañía (D_COMP, EST_COMP); Eliminar Registros de Tab" +
-    "la Estandarizada.";
-            // 
-            // groupBox7
-            // 
-            this.groupBox7.Controls.Add(this.txtTest1);
-            this.groupBox7.Controls.Add(this.btnTest1);
-            this.groupBox7.Location = new System.Drawing.Point(6, 6);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(496, 191);
-            this.groupBox7.TabIndex = 1;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "Área de Desarrollo";
-            // 
-            // button6
-            // 
-            this.button6.Location = new System.Drawing.Point(369, 128);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(101, 42);
-            this.button6.TabIndex = 7;
-            this.button6.Text = "Eliminar Acrónimo";
-            this.button6.UseVisualStyleBackColor = true;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(27, 77);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(43, 13);
-            this.label10.TabIndex = 0;
-            this.label10.Text = "Campo:";
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(134, 112);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(201, 20);
-            this.textBox2.TabIndex = 3;
-            // 
-            // button7
-            // 
-            this.button7.Location = new System.Drawing.Point(369, 74);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(101, 43);
-            this.button7.TabIndex = 6;
-            this.button7.Text = "Sustituir Acrónimo";
-            this.button7.UseVisualStyleBackColor = true;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(27, 115);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(54, 13);
-            this.label11.TabIndex = 0;
-            this.label11.Text = "Acrónimo:";
-            // 
-            // comboBox6
-            // 
-            this.comboBox6.FormattingEnabled = true;
-            this.comboBox6.Location = new System.Drawing.Point(135, 36);
-            this.comboBox6.Name = "comboBox6";
-            this.comboBox6.Size = new System.Drawing.Size(133, 21);
-            this.comboBox6.TabIndex = 1;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(27, 39);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(31, 13);
-            this.label12.TabIndex = 0;
-            this.label12.Text = "Tipo:";
-            // 
-            // comboBox7
-            // 
-            this.comboBox7.FormattingEnabled = true;
-            this.comboBox7.Location = new System.Drawing.Point(135, 74);
-            this.comboBox7.Name = "comboBox7";
-            this.comboBox7.Size = new System.Drawing.Size(133, 21);
-            this.comboBox7.TabIndex = 2;
-            // 
-            // textBox4
-            // 
-            this.textBox4.Location = new System.Drawing.Point(135, 150);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(200, 20);
-            this.textBox4.TabIndex = 4;
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(27, 153);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(101, 13);
-            this.label13.TabIndex = 0;
-            this.label13.Text = "Acrónimo a Insertar:";
-            // 
-            // checkBox2
-            // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(369, 31);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(88, 30);
-            this.checkBox2.TabIndex = 5;
-            this.checkBox2.Text = "Acrónimo en \r\nTipo";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            // 
-            // button8
-            // 
-            this.button8.Location = new System.Drawing.Point(322, 101);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(147, 49);
-            this.button8.TabIndex = 3;
-            this.button8.Text = "Agregar a Homologación\r\n";
-            this.button8.UseVisualStyleBackColor = true;
-            // 
-            // button9
-            // 
-            this.button9.Location = new System.Drawing.Point(322, 39);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(147, 49);
-            this.button9.TabIndex = 2;
-            this.button9.Text = "Generar Tabla Estandarizada\r\n";
-            this.button9.UseVisualStyleBackColor = true;
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(27, 39);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(108, 26);
-            this.label16.TabIndex = 0;
-            this.label16.Text = "Porcentaje de \r\nTolerancia/Precisión:\r\n";
-            // 
-            // numericUpDown1
-            // 
-            this.numericUpDown1.Location = new System.Drawing.Point(162, 45);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(115, 20);
-            this.numericUpDown1.TabIndex = 1;
-            this.numericUpDown1.Value = new decimal(new int[] {
-            70,
-            0,
-            0,
-            0});
-            // 
-            // groupBox8
-            // 
-            this.groupBox8.Controls.Add(this.textBox6);
-            this.groupBox8.Controls.Add(this.textBox5);
-            this.groupBox8.Location = new System.Drawing.Point(361, 19);
-            this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(137, 70);
-            this.groupBox8.TabIndex = 4;
-            this.groupBox8.TabStop = false;
-            this.groupBox8.Text = "Progreso de Operación";
-            // 
-            // textBox5
-            // 
-            this.textBox5.Enabled = false;
-            this.textBox5.Location = new System.Drawing.Point(13, 18);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.ReadOnly = true;
-            this.textBox5.Size = new System.Drawing.Size(102, 20);
-            this.textBox5.TabIndex = 5;
-            // 
-            // textBox6
-            // 
-            this.textBox6.Enabled = false;
-            this.textBox6.Location = new System.Drawing.Point(13, 43);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.ReadOnly = true;
-            this.textBox6.Size = new System.Drawing.Size(102, 20);
-            this.textBox6.TabIndex = 6;
             // 
             // Form1
             // 
@@ -703,15 +874,15 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.tabPage4.ResumeLayout(false);
-            this.tabPage5.ResumeLayout(false);
-            this.tabPage6.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nu_Precision)).EndInit();
+            this.tabPage5.ResumeLayout(false);
+            this.tabPage6.ResumeLayout(false);
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
             this.ResumeLayout(false);
@@ -739,45 +910,49 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Button btnTest1;
         private System.Windows.Forms.TextBox txtTest1;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.CheckBox chk_TDSimple;
+        private System.Windows.Forms.Button btn_CambiarMarca;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button btn_CambiarTipo;
+        private System.Windows.Forms.TextBox txt_NTipo;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox cmb_Tipo0;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ComboBox comboBox3;
-        private System.Windows.Forms.ComboBox comboBox4;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.ComboBox cmb_NMarca;
+        private System.Windows.Forms.ComboBox cmb_NAcr;
+        private System.Windows.Forms.Button btn_EliminarAcroGen;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.TextBox txt_Acr0;
+        private System.Windows.Forms.Button btn_CambiarAcroGen;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.ComboBox cmb_Campo0;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.Button btnRInfo;
+        private System.Windows.Forms.CheckBox chk_AcDSimple1;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.ComboBox comboBox7;
-        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.TextBox txt_NAcr1;
+        private System.Windows.Forms.ComboBox cmb_Campo1;
+        private System.Windows.Forms.Button btnEliminarAcroMar;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.TextBox txt_Acr1;
+        private System.Windows.Forms.Button btn_CambiarAcroMar;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.ComboBox comboBox6;
+        private System.Windows.Forms.ComboBox cmb_Tipo1;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Button btn_AgregarCiaHom;
+        private System.Windows.Forms.Button btn_GenerarTablaSTD;
         private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.NumericUpDown nu_Precision;
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.TextBox textBox6;
         private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.TextBox txt_NAcr0;
+        private System.Windows.Forms.CheckBox chk_AcDSimple0;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.CheckBox chk_AcTipo;
     }
 }
 
