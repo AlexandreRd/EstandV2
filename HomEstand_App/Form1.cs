@@ -6,52 +6,69 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-// RECURSOS
+// RECURSOS DE La APLICACIÓN
 using HomEstand_App.Properties;
 using System.Reflection;
-// CSV Read - CATALOGOS
+// CATALOGOS - CSV
 using System.IO;
-// Access DB - BASE DE DATOS
+// BASE DE DATOS - ACCESS
 using System.Data.OleDb;
-// Jarowinkler - METODOS DE STRING MATCHING
+// JAROWINKLER - METODOS DE STRING MATCHING
+    // INSTALADO VÍA NUGET
 using SimMetricsMetricUtilities;
-// TUPLES
+// TUPLES - 
 using System.Collections;
+// UI Thread - PROCESOS EN SEGUNDO PLANO  
+using System.Threading;
 
 namespace HomEstand_App
 {
     public partial class Form1 : Form
     {
+
         public Form1()
         {
             InitializeComponent();
         }
 
-        // VARIABLES GLOBALES 
-        // Conexion a la Base de Datos
-        String MyConnString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\\Users\\Griselda\\Desktop\\H&E_DB.mdb;";
-
-        // Catalogo de Compañías
-        String[] CiasID = null;
-
         // CARGA DEL FORMULARIO
         private void Form1_Load(object sender, EventArgs e)
         {
-            //
+            // INICIALIZAR DELEGADO PARA COMUNICACIÓN CON PROCESOS EN SEGUNDO PLANO
+            this.updateStatusDelegate = new UpdateStatusDelegate(this.UpdateStatus);
+
+            // CARGA DE CATALOGO DE COMPAÑIAS
             //load_CATCias();
         }
 
-        // COMPROBAR SI EXISTE UNA TABLA
-        public bool TableExists(OleDbConnection CONN, String table)
+        // VARIABLES GLOBALES 
+            // Conexion a la Base de Datos
+        String MyConnString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\\Users\\Griselda\\Desktop\\H&E_DB.mdb;";
+
+        // THREADING - PROCESOS EN SEGUNDO PLANO
+            // THREAD
+        private Thread myThread = null;
+            // DELEGADO USADO PARA COMUNICAR EL THREAD CON LA APLICACION PRINCIPAL
+        private delegate void UpdateStatusDelegate();
+        private UpdateStatusDelegate updateStatusDelegate = null;
+
+            // PROGRESO DEL PROCESO EN SEGUNDO PLANO:
+        int progMax = 1;
+        int progCount = 0;
+        DateTime tStart;
+        TimeSpan tExec;
+            
+            // ACTUALIZAR PROGRESO DEL PROCESO EN SEGUNDO PLANO
+        private void UpdateStatus()
         {
-            CONN.Open();
-            var exists = CONN.GetSchema("Tables", new string[4] { null, null, table, "TABLE" }).Rows.Count > 0;
-            CONN.Close();
-            return exists;
+            tExec = DateTime.Now - tStart;
+            txt_TimeExec.Text = String.Format("{0:D2}:{1:D2}:{2:D2}", tExec.Hours, tExec.Minutes, tExec.Seconds);
+            txt_ProgCount.Text = progCount.ToString() + " de " + progMax.ToString();
         }
 
-        // FUNCIONES PARA CATALOGOS
-        // COMPAÑIAS
+        // CATALOGOS
+            // CATALOGO: COMPAÑIAS (NO FUNCIONAL)
+        /*   
         public List<String>[] get_CATCias()
         {
             var currentAssembly = Assembly.GetExecutingAssembly();
@@ -110,8 +127,11 @@ namespace HomEstand_App
             }
         }
 
-        // Get Acro DB
-        // Get Acronym Database from .CSV
+            // Catalogo de Compañías
+        String[] CiasID = null;
+
+        */
+            // CATALOGO: ACRONIMOS
         public List<String>[] getAcroDB()
         {
             using (var readCSV = new StreamReader(@"C:\Users\Griselda\Documents\AcronymDB.csv"))
@@ -153,19 +173,17 @@ namespace HomEstand_App
             }
         }
 
-
-        // PRUEBAS
-        private void btnTest1_Click(object sender, EventArgs e)
+        // UTILIDADES (MÉTODOS)
+            // COMPROBAR SI EXISTE UNA TABLA
+        public bool TableExists(OleDbConnection CONN, String table)
         {
-            // OleDbConnection CONNECT = new OleDbConnection(MyConnString);
-            //ssageBox.Show(TableExists(CONNECT, "D_" + txtTest1.Text).ToString());
-            //MessageBox.Show(Resources.Cias_WS);
-
-            //CIAToStand(2, "QUALITAS", 0.7);
-            //CIAToStand(21, "AFIRME", 0.7);
+            CONN.Open();
+            var exists = CONN.GetSchema("Tables", new string[4] { null, null, table, "TABLE" }).Rows.Count > 0;
+            CONN.Close();
+            return exists;
         }
 
-        // EJECUTAR CONSULTA
+            // EJECUTAR CONSULTA SQL EN ACCESS
         public void doQuery(String CONS, String CONEX)
         {
             OleDbConnection CONNECT = new OleDbConnection(CONEX
@@ -187,6 +205,7 @@ namespace HomEstand_App
 
         }
 
+            // DETERMINAR SI UN STRING ES EQUIVALENTE A OTRO, SIN IMPORTAR: ORDEN, ESPACIOS, MAYUSCULAS NI MINUSCULAS
         public Boolean eqDescrip(String a, String b)
         {
             a = a.ToUpper(); b = b.ToUpper();
@@ -268,7 +287,7 @@ namespace HomEstand_App
             return (listA.Count == listB.Count) && new HashSet<string>(listA).SetEquals(listB);
         }
 
-        // ORDENAR ALFABETICA E INVERSAMENTE UN STRING
+            // ORDENAR ALFABETICA E INVERSAMENTE UN STRING
         public String sortDescrip(String a, Boolean Inverse)
         {
             a = a.ToUpper();
@@ -329,7 +348,1096 @@ namespace HomEstand_App
             return aWord;
         }
 
-        // ESTANDARIZAR COMPAÑíA
+            // OBTENER EL INDICE DE UN VALOR EN UNA MATRIZ DE DOBLES
+        public Tuple<int, int> getIndex(double[,] jaggedArray, double value)
+        {
+            int w = jaggedArray.GetLength(0); // width
+            int h = jaggedArray.GetLength(1); // height
+
+            for (int x = 0; x < w; ++x)
+            {
+                for (int y = 0; y < h; ++y)
+                {
+                    if (jaggedArray[x, y].Equals(value))
+                        return Tuple.Create(x, y);
+                }
+            }
+
+            return Tuple.Create(-1, -1);
+        }
+
+        /////////////////////////////////////////////////////////////
+
+        /// INTERFAZ DE USUARIO 
+
+        ///////////////////////////////////////////////////////////
+
+        // PANEL DE NAVEGACIÓN
+            // COMBO-BOX: COMPAÑIAS
+        private void cmb_Cia_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int[] num_Comp = { 7, 21, 5, 26, 20, 2, 12 };
+            txt_CiaID.Text = num_Comp[cmb_Cia.SelectedIndex].ToString();
+        
+            //txt_CiaID.Text = CiasID[cmb_Cia.SelectedIndex];
+            String cMarca = "";
+            if (cmb_Marca.SelectedIndex >= 0)
+            {
+                cMarca = cmb_Marca.SelectedItem.ToString();
+            }
+            cmb_Marca.SelectedIndex = -1;
+            cmb_Marca.Items.Clear();
+
+            OleDbConnection CONNECT = new OleDbConnection(
+                MyConnString);
+            String CONSULT = "SELECT DISTINCT Marca as Brand FROM DAT_" + cmb_Cia.SelectedItem.ToString();
+            try
+            {
+                CONNECT.Open();
+                OleDbCommand COMMAND = new OleDbCommand(CONSULT, CONNECT);
+                OleDbDataReader READER = COMMAND.ExecuteReader();
+
+                if (READER.HasRows)
+                {
+                    while (READER.Read())
+                    {
+                        if (READER["Brand"].ToString() != "")
+                            cmb_Marca.Items.Add(READER["Brand"]);
+                    }
+                }
+                READER.Close();
+                CONNECT.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "ERROR");
+            }
+            finally
+            {
+                if (cmb_Marca.Items.Contains(cMarca))
+                {
+                    cmb_Marca.SelectedItem = cMarca;
+                }
+                else {
+                    cmb_Marca.SelectedItem = -1;
+                    cmb_Tipo0.SelectedItem = -1;
+                    cmb_Tipo1.SelectedItem = -1;
+                    cmb_Tipo0.Items.Clear();
+                    cmb_Tipo1.Items.Clear();
+                }
+            }
+        }
+
+            // COMBO-BOX: MARCAS
+        private void cmb_Marca_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmb_Cia.SelectedIndex >= 0)
+            {
+                if (cmb_Marca.SelectedIndex >= 0)
+                {
+                    cmb_Tipo0.SelectedIndex = -1;
+                    cmb_Tipo1.SelectedIndex = -1;
+                    cmb_Tipo0.Items.Clear();
+                    cmb_Tipo1.Items.Clear();
+
+                    try
+                    {
+                        OleDbConnection CONNECT = new OleDbConnection(
+                            MyConnString);
+                        String CONSULT = "SELECT DISTINCT Tipo as Type FROM DAT_" + cmb_Cia.SelectedItem.ToString() + " WHERE Marca = '" + cmb_Marca.SelectedItem.ToString() + "'";
+                
+                        CONNECT.Open();
+                        OleDbCommand COMMAND = new OleDbCommand(CONSULT, CONNECT);
+                        OleDbDataReader READER = COMMAND.ExecuteReader();
+
+                        if (READER.HasRows)
+                        {
+                            while (READER.Read())
+                            {
+                                if (READER["Type"].ToString() != "")
+                                {
+                                    cmb_Tipo0.Items.Add(READER["Type"]);
+                                    cmb_Tipo1.Items.Add(READER["Type"]);
+                                }
+                            }
+                        }
+                        READER.Close();
+                        CONNECT.Close();
+                    }
+                    catch (Exception Ex)
+                    {
+                        MessageBox.Show("EX:___" + Ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
+                    }
+                }
+                else
+                {
+                    cmb_Marca.SelectedIndex = -1;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Selecciona una Compañía", "ERROR");
+                cmb_Cia.SelectedIndex = -1;
+            }
+
+        }
+
+            // REFRESCAR INFORMACIÓN (COMBO-BOXES)
+        private void btnRInfo_Click(object sender, EventArgs e)
+        {
+            cmb_Marca.SelectedIndex = -1;
+            txt_CiaID.Clear();
+        }
+
+        // PANEL 1: MARCA Y TIPO
+            // BOTON: CAMBIAR TIPO
+        private void btn_CambiarTipo_Click(object sender, EventArgs e)
+        {
+            if (txt_NTipo.Text.Trim() != "")
+            {
+                if (cmb_Tipo0.SelectedIndex >= 0)
+                {
+                    if (chk_TDSimple.Checked)
+                    {
+                        cambiarTipo(" " + cmb_Tipo0.SelectedItem.ToString().Trim() + " ", txt_NTipo.Text, cmb_Marca.SelectedItem.ToString(), cmb_Cia.SelectedItem.ToString(), true);
+                    }
+                    else
+                    {
+                        cambiarTipo(" " + cmb_Tipo0.SelectedItem.ToString().Trim() + " ", txt_NTipo.Text, cmb_Marca.SelectedItem.ToString(), cmb_Cia.SelectedItem.ToString(), false);
+                    }
+                    txt_NTipo.Clear();
+                }
+                else
+                {
+                    MessageBox.Show("Selecciona el Tipo a Sustituir", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else {
+                MessageBox.Show("Introduce el Nuevo Tipo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
+            }
+        }
+
+        private void cambiarTipo(String Tipo, String nTipo, String Marca, String Cia, Boolean tDSimple)
+        {
+            OleDbConnection CONNECT = new OleDbConnection(
+                MyConnString);
+            String CONSULT = "SELECT * FROM DAT_" + Cia + " WHERE Marca = '" + Marca + "'";
+            try
+            {
+                CONNECT.Open();
+                // Si el Tipo está en la Descripción Simple
+                OleDbCommand COMMAND = (tDSimple) ? 
+                    new OleDbCommand(CONSULT, CONNECT) : 
+                    new OleDbCommand(CONSULT + " AND Tipo = '" + Tipo.Trim() + "'", CONNECT);
+
+                OleDbDataReader READER = COMMAND.ExecuteReader();
+
+                while (READER.Read())
+                {
+                    String x;
+                    
+                    if (tDSimple)
+                    {
+                        x = " " + READER["DescripSimple"].ToString().Trim() + " ";
+                        if (x.Contains(Tipo))
+                        {
+                            //REMOVER Tipo de la Descripcion Simple
+                            x = x.Replace(Tipo, " ");
+
+                            doQuery("UPDATE DAT_" + Cia + " SET Tipo = '" + nTipo + "', DescripSimple = '" + x.Trim() + "' WHERE Clave = '" + READER["Clave"].ToString() +
+                                "' AND Marca = '" + READER["Marca"].ToString() + "'",
+
+                                MyConnString
+                                 );
+                        }
+                    }
+                    else
+                    {
+                        doQuery("UPDATE DAT_" + Cia + " SET Tipo = '" + nTipo + "' WHERE Tipo = '" + Tipo.Trim() +
+                                "' AND Marca = '" + READER["Marca"].ToString() + "'",
+
+                                MyConnString
+                                 );
+                    }
+
+                }
+                MessageBox.Show("Tipo cambiado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information); 
+                READER.Close();
+                CONNECT.Close();
+            }
+            catch (Exception Ex)
+            {
+                MessageBox.Show("EX:___" + Ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
+            }
+        }
+
+            // BOTON: CAMBIAR MARCA
+        private void btn_CambiarMarca_Click(object sender, EventArgs e)
+        {
+            if (cmb_Tipo0.SelectedIndex >= 0)
+            {
+                if (cmb_NMarca.SelectedIndex >= 0)
+                {
+                    cambiarMarca(cmb_Tipo0.SelectedItem.ToString(), cmb_Marca.SelectedItem.ToString(), cmb_NMarca.SelectedItem.ToString(), cmb_Cia.SelectedItem.ToString());
+                    cmb_NMarca.SelectedIndex = -1;
+                }
+                else {
+                    MessageBox.Show("Introduce la Nueva Marca", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
+                }
+            }
+            else {
+                MessageBox.Show("Introduce el Tipo cuya Marca se va a Sustituir", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
+            }
+        }
+
+        private void cambiarMarca(String Tipo, String Marca, String nMarca, String Cia)
+        {
+            try
+            {
+                OleDbConnection CONNECT = new OleDbConnection(
+                    MyConnString);
+                String CONSULT = "SELECT * FROM DAT_" + Cia + " WHERE Marca = '" + Marca + "' AND Tipo = '" + Tipo + "' ORDER BY Clave";
+                CONNECT.Open();
+                OleDbCommand COMMAND = new OleDbCommand(CONSULT, CONNECT);
+
+                OleDbDataReader READER = COMMAND.ExecuteReader();
+
+                while (READER.Read())
+                {
+                    doQuery("UPDATE DAT_" + Cia + " SET Marca = '" + nMarca + "' WHERE Clave = '" + READER["Clave"].ToString() +
+                                "' AND Marca = '" + READER["Marca"].ToString() + "' AND Tipo = '" + READER["Tipo"].ToString() + "'",
+                                MyConnString
+                                 );
+                }     
+                MessageBox.Show("Marca cambiada correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                READER.Close();
+                CONNECT.Close();
+            }
+            catch (Exception Ex)
+            {
+                MessageBox.Show("EX:___" + Ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // PANEL 2: ACRONIMOS GENERALES
+            // COMBO-BOX: CAMPO (BASE DE DATOS)
+        private void cmb_Campo0_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Trans, Cil, Vest, Aire, QC, Equipado, EE, BAire, Sonido, ABS, RA, FN, CodRaro, DH 
+            String[,] fieldOptions = { 
+                                       { "2", "3", "4", "5", "6", "7", "8", "9", "10", "12", 
+                                           "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", 
+                                           "23", "24", "25", "27", "30", 
+                                           "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+                                        { "2Ptas", "2y4Ptas", "3Ptas", "3y5Ptas", "4Ptas", "5Ptas", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
+                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+                                        { "Aut", "Std", "7G-DCT", "7G-Tronic", "9G-DCT", "9G-Tronic", "AMG-Speedshift", "ASG", "AutoStick", "CVT", "DCT", 
+                                           "Drivelogic", "DSG", "Dualogic", "DuoSelect", "Easytronic", "EDC", "Geartronic", "GETRAG", "G-Tronic", "HSD", 
+                                           "Hydramatic", "Lineartronic", "M-DKG", "MCT", "Multitronic", "PDK", "Powershift", "Q-Tronic", "R-Tronic", "Secuencial", "SelectShift",
+                                           "Selespeed", "Sentronic", "Shiftmatic", "Shiftronic", "SMG-II", "SMG", "Sportronic", "SportShift", "Steptronic", "S-Tronic",
+                                           "TCT", "Tiptronic", "Touchtronic", "X-Tronic"}, 
+                                        { "0Cil", "2Cil", "3Cil", "4Cil", "5Cil", "6Cil", "8Cil", "10Cil", "12Cil", 
+                                            "", "", "", "", "", "", "", "","", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+                                        { "Alcantara", "Gamusina", "Gamuza", "Leatherette", "Napa", "Piel parcial", "Piel", "Tela", "Terciopelo", "Velour", 
+                                            "Vinil", "", "", "","", "", "", "","", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+                                        { "C/AAcc", "S/AAcc", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
+                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+                                        { "C/Qcc", "S/Qcc", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
+                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+                                        { "6CD", "AFS", "ASIST.EST.", "AUDIO MANEJO", "C/CAMARA", "C/LOCKER", "CAM.TRAS.", "COMAND ONLINE", "COMP.VIAJE.", "CTROL/AUDIO", 
+                                            "CTROL/VOZ", "EQUIPADO", "F/BI-XENON", "F/XENON", "GETRONIC", "GMLINK", "FULL LINK", "GPS", "HIELERA", "HILL HOLDER", "JOYBOX", 
+                                            "MEDIA NAV", "MULTIMEDIA", "MYGIG", "NAVIGON", "PTA.TRAS.ELEC.", "SEMIEQUIPADO", "RNS-510", "SIST.ENTRET.", "SIST.NAV.", 
+                                            "TPM", "TV", "UCONNECT", "WIFI", "", "", "", "", "", "", "", "", "", "", "", ""},
+                                        { "CE", "EE", "SE", "", "", "", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
+                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+                                        { "CB", "CBL", "SB", "", "", "", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
+                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+                                        { "AM", "BD", "BOSE", "BT", "CD", "CT", "DVD", "DYNAUDIO", "FENDER", "FM",
+                                            "MP3", "RADIO", "SS", "USB", "","", "", "","", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+                                        { "ABS", "D/ABS", "D/V", "D/T", "DIS", "NEU", "TAM", "V", "V/DIS", "V/T", "", "", "", "","", "", "", "","", "", "", "", "",
+                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+                                        { "R-13", "R-14", "R-15", "R-16", "R-17", "R-18", "R-19", "R-20", "R-21", "R-22",
+                                            "R-25", "RA", "RA-14", "RA-15", "RA-16", "RA-17", "RA-18", "RA-19", "RA-20",
+                                            "RA-21", "", "", "", "", "", "", "", "", "", 
+                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+                                        { "FN", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
+                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+                                        { "SM", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
+                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+                                        { "DH", "DHS", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
+                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""}
+                                     };
+
+
+            cmb_NAcr.Text = "";
+            cmb_NAcr.Items.Clear();
+            cmb_NAcr.SelectedIndex = -1;
+            if (cmb_Campo0.SelectedIndex >= 0)
+            {
+                for (int i = 0; i < 45; i++)
+                {
+                    if (fieldOptions[cmb_Campo0.SelectedIndex, i] != "")
+                        cmb_NAcr.Items.Add(fieldOptions[cmb_Campo0.SelectedIndex, i]);
+                }
+                
+            }
+            chk_AcDSimple0.Checked = false;
+        }
+
+            // CHECK-BOX: ACRONIMO EN DESCRIPCION SIMPLE
+        private void chk_AcDSimple_CheckedChanged(object sender, EventArgs e)
+        {
+            cmb_Campo0.SelectedIndex = -1;
+            cmb_NAcr.SelectedIndex = -1;
+        }
+
+            // BOTON: CAMBIAR ACRONIMO GENERAL
+        private void btn_CambiarAcroGen_Click(object sender, EventArgs e)
+        {
+            if (txt_Acr0.Text.Trim() != "")
+            {
+                if (chk_AcDSimple0.Checked)
+                {
+                    if (txt_NAcr0.Text.Trim() != "")
+                    {
+                        cambiarAcroGen(" " + txt_Acr0.Text.Trim() + " ", txt_NAcr0.Text.Trim(), "DescripSimple", cmb_Cia.SelectedItem.ToString(), true);
+                        txt_Acr0.Clear();
+                        txt_NAcr0.Clear();
+                    }
+                    else {
+                        MessageBox.Show("Introduce el Nuevo Acrónimo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else {
+                    if (cmb_Campo0.SelectedIndex >= 0)
+                    {
+                        if (cmb_NAcr.SelectedIndex >= 0)
+                        {
+                            cambiarAcroGen(" " + txt_Acr0.Text.Trim() + " ", cmb_NAcr.SelectedItem.ToString(), cmb_Campo0.SelectedItem.ToString(), cmb_Cia.SelectedItem.ToString(), false);
+                            txt_Acr0.Clear();
+                        }
+                        else {
+                            MessageBox.Show("Introduce el Nuevo Acrónimo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    else {
+                        MessageBox.Show("Selecciona un Campo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }  
+                }
+            }
+            else {
+                MessageBox.Show("Introduce el Acrónimo a Sustituir", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void cambiarAcroGen(String Acro, String nAcro, String Campo, String Cia, Boolean DSimple)
+        {
+            OleDbConnection CONNECT = new OleDbConnection(
+                MyConnString);
+            String CONSULT = "SELECT * FROM DAT_" + Cia + " ORDER BY Clave, Modelo";
+            try
+            {
+                CONNECT.Open();
+                OleDbCommand COMMAND = new OleDbCommand(CONSULT, CONNECT);
+                OleDbDataReader READER = COMMAND.ExecuteReader();
+
+                while (READER.Read())
+                {
+                    String x = " " + READER["DescripSimple"].ToString() + " ";
+                    if (DSimple)
+                    {
+                        if (x.Contains(Acro))
+                        {
+                            x = x.Replace(Acro, " " + nAcro.Trim() + " ");
+                            doQuery("UPDATE DAT_" + Cia + " SET DescripSimple = '" + x.Trim() + "' WHERE Clave = '" + READER["Clave"].ToString() +
+                                "' AND Modelo = " + READER["Modelo"].ToString(),
+
+                                MyConnString
+                                 );
+                        }
+                    }
+                    else
+                    {
+                        String y = READER[Campo].ToString();
+
+                        if (x.Contains(Acro))
+                        {
+                            if (!(" " + y.Trim() + " ").Contains(" " + nAcro + " "))
+                            {
+                                x = x.Replace(Acro, " ");
+                                y = (y.Length > 0) ? y + " " + nAcro : Acro;
+                                doQuery("UPDATE DAT_" + Cia + " SET DescripSimple = '" + x.Trim() + "', " + Campo + " = '" + y + "' WHERE Clave = '" + READER["Clave"].ToString() +
+                                    "' AND Modelo = " + READER["Modelo"].ToString(),
+
+                                    MyConnString
+                                     );
+                            }
+                            else
+                            {
+                                x = x.Replace(Acro, " ");
+                                doQuery("UPDATE DAT_" + Cia + " SET DescripSimple = '" + x.Trim() + "' WHERE Clave = '" + READER["Clave"].ToString() +
+                                    "' AND Modelo = " + READER["Modelo"].ToString(),
+
+                                    MyConnString
+                                     );
+                            }
+                        }
+                    }
+                }
+                MessageBox.Show("Acrónimo cambiado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                READER.Close();
+                CONNECT.Close();
+            }
+            catch (Exception Ex)
+            {
+                MessageBox.Show("EX:___" + Ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+            // BOTON: ELIMINAR ACRONIMO GENERAL
+        private void btn_EliminarAcroGen_Click(object sender, EventArgs e)
+        {
+            if (txt_Acr0.Text.Trim() != "")
+            {
+                if (chk_AcDSimple0.Checked)
+                {
+                    DialogResult dialogResult = MessageBox.Show("¿Borrar contenido especificado?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        eliminarAcroGen(" " + txt_Acr0.Text + " ", cmb_Cia.SelectedItem.ToString(), "DescripSimple"); 
+                    }
+                }
+                else
+                {
+                    if (cmb_Campo0.SelectedIndex >= 0)
+                    {
+                        DialogResult dialogResult = MessageBox.Show("¿Borrar contenido especificado?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        if (dialogResult == DialogResult.Yes)
+                        {
+                            eliminarAcroGen(" " + txt_Acr0.Text + " ", cmb_Cia.SelectedItem.ToString(), cmb_Campo0.SelectedItem.ToString());
+                        }
+                    }
+                    else {
+                        MessageBox.Show("Selecciona el Campo donde se eliminará el Acrónimo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                txt_Acr0.Clear();
+            }
+            else
+            {
+                MessageBox.Show("Introduce el Acrónimo a Eliminar", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void eliminarAcroGen(String Acro, String Cia, String Campo)
+        {
+            OleDbConnection CONNECT = new OleDbConnection(
+                MyConnString);
+            String CONSULT = "SELECT * FROM DAT_" + Cia + " ORDER BY Clave";
+            try
+            {
+                CONNECT.Open();
+                OleDbCommand COMMAND = new OleDbCommand(CONSULT, CONNECT);
+                OleDbDataReader READER = COMMAND.ExecuteReader();
+
+                if (READER.HasRows)
+                {
+                    while (READER.Read())
+                    {
+                        String x = " " + READER[Campo].ToString().Trim() + " ";
+                        if (x.Contains(Acro))
+                        {
+                            x = x.Replace(Acro, " ");
+                            doQuery("UPDATE DAT_" + Cia + " SET " + Campo + " = '" + x.Trim() + "' WHERE Clave = '" + READER["Clave"].ToString() +
+                                "' AND Modelo = " + READER["Modelo"].ToString(),
+
+                                MyConnString
+                                );
+                        }
+
+                    }
+                }
+                MessageBox.Show("Acrónimo eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                READER.Close();
+                CONNECT.Close();
+            }
+            catch (Exception Ex)
+            {
+                MessageBox.Show("EX:___" + Ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // PANEL 3: ACRONIMOS POR MARCA
+            // CHECK-BOX: ACRONIMO EN DESCRIPCION SIMPLE
+        private void chk_AcDSimple1_CheckedChanged(object sender, EventArgs e)
+        {
+            cmb_Campo1.SelectedIndex = -1;
+        }
+
+            // BOTON: CAMBIAR ACRONIMO POR MARCA
+        private void btn_CambiarAcroMar_Click(object sender, EventArgs e)
+        {
+
+            if (cmb_Marca.SelectedIndex >= 0) 
+            {
+                if (txt_Acr1.Text.Trim() != "")
+                {
+                    if (txt_NAcr1.Text.Trim() != "")
+                    {
+                        if (chk_AcTipo.Checked)
+                        {
+                            if (cmb_Tipo1.SelectedIndex >= 0)
+                            {
+                                if (chk_AcDSimple1.Checked)
+                                {
+                                    // MARCA-TIPO Y DSIMPLE
+                                    cambiarAcroMar(
+                                    " " + txt_Acr1.Text.Trim() + " ",
+                                    txt_NAcr1.Text.Trim(),
+                                    cmb_Cia.SelectedItem.ToString(),
+                                    cmb_Marca.SelectedItem.ToString(),
+                                    cmb_Tipo1.SelectedItem.ToString(),
+                                    "DescripSimple"
+                                    );
+                                }
+                                else {
+                                    // MARCA-TIPO Y CAMPO
+                                    cambiarAcroMar(
+                                    " " + txt_Acr1.Text.Trim() + " ",
+                                    txt_NAcr1.Text.Trim(),
+                                    cmb_Cia.SelectedItem.ToString(),
+                                    cmb_Marca.SelectedItem.ToString(),
+                                    cmb_Tipo1.SelectedItem.ToString(),
+                                    cmb_Campo1.SelectedItem.ToString()
+                                    );
+                                }
+                                txt_NAcr1.Clear();
+                            }
+                            else {
+                                MessageBox.Show("Selecciona un Tipo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                        else {
+                            if (chk_AcDSimple1.Checked)
+                            {
+                                // MARCA Y DSIMPLE
+                                cambiarAcroMar(
+                                    " " + txt_Acr1.Text.Trim() + " ",
+                                    txt_NAcr1.Text.Trim(),
+                                    cmb_Cia.SelectedItem.ToString(),
+                                    cmb_Marca.SelectedItem.ToString(),
+                                    "noTipo",
+                                    "DescripSimple"
+                                    );
+                            }
+                            else {
+                                // MARCA Y CAMPO
+                                cambiarAcroMar(
+                                    " " + txt_Acr1.Text.Trim() + " ", 
+                                    txt_NAcr1.Text.Trim(), 
+                                    cmb_Cia.SelectedItem.ToString(), 
+                                    cmb_Marca.SelectedItem.ToString(), 
+                                    "noTipo", 
+                                    cmb_Campo1.SelectedItem.ToString()
+                                    );
+                            }
+                            txt_NAcr1.Clear();
+                        }
+                    }
+                    else {
+                        MessageBox.Show("Introduce Acrónimo a Insertar", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else {
+                    MessageBox.Show("Introduce Acrónimo a Sustituir", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
+                }
+            }
+            else {
+                MessageBox.Show("Selecciona una Marca", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+            }
+        }
+
+        private void cambiarAcroMar(String Acro, String nAcro, String Cia, String Marca, String Tipo, String Campo)
+        {
+            OleDbConnection CONNECT = new OleDbConnection(
+                MyConnString);
+
+            String CONSULT = (Tipo == "noTipo") ?  
+                "SELECT * FROM DAT_" + Cia + " WHERE Marca = '" + Marca + "' ORDER BY Clave" :
+                "SELECT * FROM DAT_" + Cia + " WHERE Marca = '" + Marca + "' AND Tipo = '" + Tipo + "' ORDER BY Clave";
+
+            try
+            {
+                CONNECT.Open();
+                OleDbCommand COMMAND = new OleDbCommand(CONSULT, CONNECT);
+                OleDbDataReader READER = COMMAND.ExecuteReader();
+
+                if (READER.HasRows)
+                {
+                    while (READER.Read())
+                    {
+                        String x;
+                        if (Campo != "DescripSimple") {
+                            x = " " + READER["DescripSimple"].ToString().Trim() + " ";
+                            String y = READER[Campo].ToString();
+                            if (x.Contains(Acro))
+                            {
+                                x = x.Replace(Acro, " ");
+                                y = (!y.Contains(nAcro)) ? y + " " + nAcro : nAcro;
+
+                                if (Tipo == "noTipo")
+                                {
+                                    doQuery("UPDATE DAT_" + Cia + " SET DescripSimple = '" + x.Trim() + "', " + Campo + " = '" + y + "' WHERE Clave = '" + READER["Clave"].ToString() +
+                                        "' AND Marca = '" + READER["Marca"].ToString() + "'",
+
+                                        MyConnString
+                                        );
+                                }
+                                else {
+                                    doQuery("UPDATE DAT_" + Cia + " SET DescripSimple = '" + x.Trim() + "', " + Campo + " = '" + y + "' WHERE Clave = '" + READER["Clave"].ToString() +
+                                       "' AND Marca = '" + READER["Marca"].ToString() + "' AND Tipo = '" + READER["Tipo"].ToString() + "'",
+
+                                       MyConnString
+                                       );
+                                }
+                            }
+                        }
+                        else
+                        {
+                            x = " " + READER[Campo].ToString() + " ";
+                            if (x.Contains(Acro))
+                            {
+                                x = x.Replace(Acro, " " + nAcro + " ");
+                                if (Tipo == "noTipo")
+                                {
+                                    doQuery("UPDATE DAT_" + Cia + " SET " + Campo + " = '" + x.Trim() + "' WHERE Clave = '" + READER["Clave"].ToString() +
+                                        "' AND Marca = '" + READER["Marca"].ToString() + "'",
+
+                                        MyConnString
+                                        );
+                                }
+                                else
+                                {
+                                    doQuery("UPDATE DAT_" + Cia + " SET " + Campo + " = '" + x.Trim() + "' WHERE Clave = '" + READER["Clave"].ToString() +
+                                       "' AND Marca = '" + READER["Marca"].ToString() + "' AND Tipo = '" + READER["Tipo"].ToString() + "'",
+
+                                       MyConnString
+                                       );
+                                }
+                            }
+                        }
+                    }
+                }
+                MessageBox.Show("Acrónimo sustituido correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                READER.Close();
+                CONNECT.Close();
+            }
+            catch (Exception Ex)
+            {
+                MessageBox.Show("EX:___" + Ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+            // BOTON: ELIMINAR ACRONIMO POR MARCA
+        private void btnEliminarAcroMar_Click(object sender, EventArgs e)
+        {
+            if (cmb_Marca.SelectedIndex >= 0)
+            {
+                if (txt_Acr1.Text.Trim() != "")
+                {
+                    if (chk_AcTipo.Checked)
+                    {
+                        // ELIMINAR EN TIPO ESPECIFICO
+                        if (cmb_Tipo1.SelectedIndex >= 0)
+                        {
+                            if (chk_AcDSimple1.Checked)
+                            {
+                                // MARCA-TIPO Y DSIMPLE
+                                DialogResult dialogResult = MessageBox.Show("¿Borrar contenido especificado?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                                if (dialogResult == DialogResult.Yes)
+                                {
+                                    eliminarAcroMar(
+                                    " " + txt_Acr1.Text.Trim() + " ",
+                                    cmb_Cia.SelectedItem.ToString(),
+                                    cmb_Marca.SelectedItem.ToString(),
+                                    cmb_Tipo1.SelectedItem.ToString(),
+                                    "DescripSimple"
+                                    );
+                                }
+                            }
+                            else
+                            {
+                                // MARCA-TIPO Y CAMPO
+                                DialogResult dialogResult = MessageBox.Show("¿Borrar contenido especificado?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                                if (dialogResult == DialogResult.Yes)
+                                {
+                                    eliminarAcroMar(
+                                    " " + txt_Acr1.Text.Trim() + " ",
+                                    cmb_Cia.SelectedItem.ToString(),
+                                    cmb_Marca.SelectedItem.ToString(),
+                                    cmb_Tipo1.SelectedItem.ToString(),
+                                    cmb_Campo1.SelectedItem.ToString()
+                                    );
+                                }
+                            }
+                            txt_Acr1.Clear();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Selecciona un Tipo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    else { 
+                        // NO TIPO
+                        if (chk_AcDSimple1.Checked)
+                        {
+                            // MARCA Y DSIMPLE
+                            DialogResult dialogResult = MessageBox.Show("¿Borrar contenido especificado?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (dialogResult == DialogResult.Yes)
+                            {
+                                eliminarAcroMar(
+                                    " " + txt_Acr1.Text.Trim() + " ",
+                                    cmb_Cia.SelectedItem.ToString(),
+                                    cmb_Marca.SelectedItem.ToString(),
+                                    "noTipo",
+                                    "DescripSimple"
+                                    );
+                            }
+                        }
+                        else {
+                            // MARCA Y CAMPO
+                            DialogResult dialogResult = MessageBox.Show("¿Borrar contenido especificado?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (dialogResult == DialogResult.Yes)
+                            {
+                                eliminarAcroMar(
+                                    " " + txt_Acr1.Text.Trim() + " ",
+                                    cmb_Cia.SelectedItem.ToString(),
+                                    cmb_Marca.SelectedItem.ToString(),
+                                    "noTipo",
+                                    cmb_Campo1.SelectedItem.ToString()
+                                    );
+                            }
+                        }
+                        txt_Acr1.Clear();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Introduce Acrónimo a Sustituir", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Selecciona una Marca", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void eliminarAcroMar(String Acro, String Cia, String Marca, String Tipo, String Campo)
+        {
+            OleDbConnection CONNECT = new OleDbConnection(
+                MyConnString);
+
+            String CONSULT = (Tipo == "noTipo") ?
+                "SELECT * FROM DAT_" + Cia + " WHERE Marca = '" + Marca + "' ORDER BY Clave" :
+                "SELECT * FROM DAT_" + Cia + " WHERE Marca = '" + Marca + "' AND Tipo = '" + Tipo + "' ORDER BY Clave";
+
+            try
+            {
+                CONNECT.Open();
+                OleDbCommand COMMAND = new OleDbCommand(CONSULT, CONNECT);
+                OleDbDataReader READER = COMMAND.ExecuteReader();
+
+                if (READER.HasRows)
+                {
+                    while (READER.Read())
+                    {
+                        String x;
+                        if (Campo != "DescripSimple")
+                        {
+                            x = " " + READER[Campo].ToString().Trim() + " ";
+                            if (x.Contains(Acro))
+                            {
+                                x = x.Replace(Acro, " ");
+
+                                if (Tipo == "noTipo")
+                                {
+                                    doQuery("UPDATE DAT_" + Cia + " SET " + Campo + " = '" + x.Trim() + "' WHERE Clave = '" + READER["Clave"].ToString() +
+                                        "' AND Marca = '" + READER["Marca"].ToString() + "'",
+
+                                        MyConnString
+                                        );
+                                }
+                                else
+                                {
+                                    doQuery("UPDATE DAT_" + Cia + " SET " + Campo + " = '" + x.Trim() + "' WHERE Clave = '" + READER["Clave"].ToString() +
+                                       "' AND Marca = '" + READER["Marca"].ToString() + "' AND Tipo = '" + READER["Tipo"].ToString() + "'",
+
+                                       MyConnString
+                                       );
+                                }
+                            }
+                        }
+                        else
+                        {
+                            x = " " + READER["DescripSimple"].ToString() + " ";
+                            if (x.Contains(Acro))
+                            {
+                                x = x.Replace(Acro, " ");
+                                if (Tipo == "noTipo")
+                                {
+                                    doQuery("UPDATE DAT_" + Cia + " SET DescripSimple = '" + x.Trim() + "' WHERE Clave = '" + READER["Clave"].ToString() +
+                                        "' AND Marca = '" + READER["Marca"].ToString() + "'",
+
+                                        MyConnString
+                                        );
+                                }
+                                else
+                                {
+                                    doQuery("UPDATE DAT_" + Cia + " SET DescripSimple = '" + x.Trim() + "' WHERE Clave = '" + READER["Clave"].ToString() +
+                                       "' AND Marca = '" + READER["Marca"].ToString() + "' AND Tipo = '" + READER["Tipo"].ToString() + "'",
+
+                                       MyConnString
+                                       );
+                                }
+                            }
+                        }
+                    }
+                }
+                MessageBox.Show("Acrónimo eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                READER.Close();
+                CONNECT.Close();
+            }
+            catch (Exception Ex)
+            {
+                MessageBox.Show("EX:___" + Ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // PANEL 4 - ESTANDARIZACIÓN
+          // GENERAR TABLA ESTANDARIZADA
+        private void btn_GenerarTablaSTD_Click(object sender, EventArgs e)
+        {
+            if (cmb_Cia.SelectedIndex >= 0)
+            {
+                try
+                {
+                    String nomCia = cmb_Cia.SelectedItem.ToString();
+                    tStart = DateTime.Now;
+
+                    // VERIFICAR SI LA TABLA ESTANDARIZADA CONTIENE REGISTROS
+                    int count = 0;
+                    try
+                    {
+                        OleDbConnection CONNECT_COUNT = new OleDbConnection(MyConnString);
+                        CONNECT_COUNT.Open();
+                        OleDbCommand COMMAND_COUNT = new OleDbCommand("SELECT COUNT (*) FROM STD_" + nomCia, CONNECT_COUNT);
+
+                        count = Convert.ToInt32(COMMAND_COUNT.ExecuteScalar());
+
+                        CONNECT_COUNT.Close();
+                    }
+                    catch (Exception Ex)
+                    {
+                        MessageBox.Show("EX:___" + Ex.ToString(), "Error al obtener registros de STD_"+ nomCia, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
+                    // TABLA SIN REGISTROS, GENERAR NUEVA
+                    if (count == 0)
+                    {
+                        //MessageBox.Show("Compañía no disponible", "Error");
+                        int numCia = Convert.ToInt32(txt_CiaID.Text);
+                        this.myThread = null;
+                        this.myThread = new Thread(
+                            () => DBToStand(nomCia, numCia)
+                        );
+                        this.myThread.Start();
+                    }
+                    else
+                    {
+                        MessageBox.Show("La Tabla STD_" + nomCia + " ya contiene registros", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception Ex)
+                {
+                    MessageBox.Show("EX:___" + Ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else {
+                MessageBox.Show("Selecciona una compañía.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+            // GENERAR TABLA ESTANDARIZADA PARA COMPAÑIA GENERICA
+        public void DBToStand(String Company, Int32 numCompany)
+        {
+            progCount = 0;
+            try
+            {
+                OleDbConnection CONNECTPB = new OleDbConnection(MyConnString);
+                CONNECTPB.Open();
+                OleDbCommand COMMAND_PBAR = new OleDbCommand("SELECT COUNT (*) FROM DAT_" + Company, CONNECTPB);
+
+                progMax = Convert.ToInt32(COMMAND_PBAR.ExecuteScalar());
+
+                CONNECTPB.Close();
+            }
+            catch (Exception Ex)
+            {
+                MessageBox.Show(Ex.ToString(), "Error en Count de Registros");
+            }
+
+            OleDbConnection CONNECT = new OleDbConnection(
+                MyConnString);
+            String CONSULTA = "SELECT * FROM DAT_" + Company + " ORDER BY Clave";
+            // var np = "";
+            try
+            {
+                CONNECT.Open();
+                OleDbCommand COMMAND = new OleDbCommand(CONSULTA, CONNECT);
+                OleDbDataReader READER = COMMAND.ExecuteReader();
+
+                while (READER.Read())
+                {
+                    if (READER["Tipo"].ToString() != "" && READER["Marca"].ToString() != "ESPECIALES" && READER["Marca"].ToString() != "FRONTERIZO" && READER["Marca"].ToString() != "LEGALIZADO" && READER["Marca"].ToString() != "FRONTERIZO" && READER["Marca"].ToString() != "PLAN PISO" && READER["Marca"].ToString() != "CLASICO")
+                    {
+                        String desTSM = (READER["DescripSimple"].ToString().Trim().Length > 0) ?
+                            READER["DescripSimple"].ToString().Trim() + " " : "";
+                        desTSM += (READER["Equipado"].ToString().Trim().Length > 0) ? READER["Equipado"].ToString().Trim() + " " : "";
+                        desTSM += (READER["Trans"].ToString().Trim().Length > 0) ? READER["Trans"].ToString().Trim() + " " : "";
+                        desTSM += (READER["Puertas"].ToString().Trim().Length > 0) ? READER["Puertas"].ToString().Trim() + " " : "";
+                        desTSM += (READER["Vestiduras"].ToString().Trim().Length > 0) ? READER["Vestiduras"].ToString().Trim() + " " : "";
+                        desTSM += (READER["ABS"].ToString().Trim().Length > 0) ? READER["ABS"].ToString().Trim() + " " : "";
+                        desTSM += (READER["Aire"].ToString().Trim().Length > 0) ? READER["Aire"].ToString().Trim() + " " : "";
+                        desTSM += (READER["QC"].ToString().Trim().Length > 0) ? READER["QC"].ToString().Trim() + " " : "";
+                        // np = READER["Clave"].ToString().Trim() + " : " + READER["Modelo"].ToString().Trim();
+                        desTSM += (Convert.ToInt32(READER["NPass"].ToString()) > 0) ? READER["NPass"].ToString().Trim() + "Pasaj " : "";
+                        desTSM += (READER["EE"].ToString().Trim().Length > 0) ? READER["EE"].ToString().Trim() + " " : "";
+                        desTSM += (READER["Vidrios"].ToString().Trim().Length > 0) ? READER["Vidrios"].ToString().Trim() + " " : "";
+                        desTSM += (READER["BAire"].ToString().Trim().Length > 0) ? READER["BAire"].ToString().Trim() + " " : "";
+                        desTSM += (READER["Sonido"].ToString().Trim().Length > 0) ? READER["Sonido"].ToString().Trim() + " " : ""; ;
+                        desTSM += (READER["FN"].ToString().Trim().Length > 0) ? READER["FN"].ToString().Trim() + " " : "";
+                        desTSM += (READER["DH"].ToString().Trim().Length > 0) ? READER["DH"].ToString().Trim() + " " : "";
+                        desTSM += (READER["DT"].ToString().Trim().Length > 0) ? READER["DT"].ToString().Trim() + " " : "";
+                        desTSM += (READER["RA"].ToString().Trim().Length > 0) ? READER["RA"].ToString().Trim() + " " : "";
+                        desTSM += (READER["Cilindros"].ToString().Trim().Length > 0) ? READER["Cilindros"].ToString().Trim() + " " : "";
+                        desTSM += (READER["FL"].ToString().Trim().Length > 0) ? READER["FL"].ToString().Trim() + " " : "";
+                        desTSM += (READER["BF"].ToString().Trim().Length > 0) ? READER["BF"].ToString().Trim() + " " : "";
+                        desTSM += (READER["PE"].ToString().Trim().Length > 0) ? READER["PE"].ToString().Trim() + " " : "";
+                        desTSM += (READER["TP"].ToString().Trim().Length > 0) ? READER["TP"].ToString().Trim() + " " : "";
+                        desTSM += (READER["TC"].ToString().Trim().Length > 0) ? READER["TC"].ToString().Trim() + " " : "";
+                        desTSM += (READER["CodRaro"].ToString().Trim().Length > 0) ? READER["CodRaro"].ToString().Trim() + " " : "";
+
+                        doQuery("INSERT INTO STD_" + Company +
+                               "(Cia, TipoTar, Clave, Marca, Tipo, Modelo, DescripCia, DescripSimple, " +
+                               "Equipado, Trans, Puertas, Vestiduras, ABS, Aire, QC, NPass, EE, Vidrios, BAire, Sonido, " +
+                               "FN, DH, DT, RA, Cilindros, FL, BF, PE, TP, TC, CodRaro, "
+                               + "DescripTSM)" +
+                                "VALUES (" +
+                               numCompany.ToString() +
+                                     ", 0, '" +
+                               READER["Clave"].ToString().Trim() + "', '" +
+                               READER["Marca"].ToString().Trim() + "', '" +
+                               READER["Tipo"].ToString().Trim() + "', " +
+                               READER["Modelo"].ToString() + ", '" +
+                               READER["DescripCia"].ToString().Trim() + "', '" +
+                               READER["DescripSimple"].ToString().Trim() + "', '" +
+                               READER["Equipado"].ToString().Trim() + "', '" +
+                               READER["Trans"].ToString().Trim() + "', '" +
+                               READER["Puertas"].ToString().Trim() + "', '" +
+                               READER["Vestiduras"].ToString().Trim() + "', '" +
+                               READER["ABS"].ToString().Trim() + "', '" +
+                               READER["Aire"].ToString().Trim() + "', '" +
+                               READER["QC"].ToString().Trim() + "', '" +
+                                    ((Convert.ToInt32(READER["NPass"].ToString()) > 0) ? READER["NPass"].ToString().Trim() + "Pasaj" : "") + "', '" +
+                               READER["EE"].ToString().Trim() + "', '" +
+                               READER["Vidrios"].ToString().Trim() + "', '" +
+                               READER["BAire"].ToString().Trim() + "', '" +
+                               READER["Sonido"].ToString().Trim() + "', '" +
+                               READER["FN"].ToString().Trim() + "', '" +
+                               READER["DH"].ToString().Trim() + "', '" +
+                               READER["DT"].ToString().Trim() + "', '" +
+                               READER["RA"].ToString().Trim() + "', '" +
+                               READER["Cilindros"].ToString().Trim() + "', '" +
+                               READER["FL"].ToString().Trim() + "', '" +
+                               READER["BF"].ToString().Trim() + "', '" +
+                               READER["PE"].ToString().Trim() + "', '" +
+                               READER["TP"].ToString().Trim() + "', '" +
+                               READER["TC"].ToString().Trim() + "', '" +
+                               READER["CodRaro"].ToString().Trim() + "', '" +
+                               desTSM.Trim() +
+                               "')"
+                               ,
+                               MyConnString
+                           );
+                    }
+                    progCount++;
+                    this.Invoke(this.updateStatusDelegate);
+                }
+                READER.Close();
+                CONNECT.Close();
+                MessageBox.Show("Tabla STD_" + Company + " Generada Correctamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception Ex)
+            {
+                MessageBox.Show("EX:___" + Ex.ToString(), "Error al generar STD_" + Company, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                this.myThread.Abort();
+            }
+        }     
+
+          // AGREGAR TABLA ESTANDARIZADA A HOMOLOGACIÓN
+        private void btn_AgregarCiaHom_Click(object sender, EventArgs e)
+        {
+            if (cmb_Cia.SelectedIndex >= 0)
+            {
+                tStart = DateTime.Now;
+                String nomCia = cmb_Cia.SelectedItem.ToString();
+                int numCia = Convert.ToInt32(txt_CiaID.Text);
+
+                // VERIFICAR SI LA TABLA ESTANDARIZADA YA FUE AGREGADA A DATOS ESTANDARIZADOS
+                int count = 0;
+                try
+                {
+                    OleDbConnection CONNECT_COUNT = new OleDbConnection(MyConnString);
+                    CONNECT_COUNT.Open();
+                    OleDbCommand COMMAND_COUNT = new OleDbCommand("SELECT COUNT (Cia_" + nomCia.ToString() + ") FROM DatosEstandarizados WHERE (Cia_" + nomCia.ToString() + " <> '')", CONNECT_COUNT);
+
+                    count = Convert.ToInt32(COMMAND_COUNT.ExecuteScalar());
+
+                    CONNECT_COUNT.Close();
+                }
+                catch (Exception Ex)
+                {
+                    MessageBox.Show("EX:___" + Ex.ToString(), "Error al obtener registros estandarizados en Cia_" + numCia.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                if (count == 0)
+                {
+                    if (nu_Precision.Value > 69)
+                    {
+                        this.myThread = null;
+                        this.myThread = new Thread(
+                                () => CIAToStand(numCia, nomCia, Convert.ToDouble(nu_Precision.Value / 100) - 0.001)
+                            );
+                        this.myThread.Start();
+                    }
+                    else {
+                        MessageBox.Show("Favor de evaluar con una mayor precisión." , "Error" + numCia.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("La compañía " + nomCia + " ya está agregada a la homologación", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Selecciona una compañía.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         public void CIAToStand(Int32 numCia, String nomCia, Double rAccuracy)
         {
             // Acronym DataBase
@@ -377,33 +1485,28 @@ namespace HomEstand_App
             // Campos de CEVIC
             String cveCEVIC, Mar, Typ, Mod, cveCo;
             int nMod = 0;
-            //
             Boolean NMod = false;
 
-
-            /* Progress Count
-            pBCount = 0;
+            progCount = 0;
             try
             {
                 OleDbConnection CONNECTPB = new OleDbConnection(MyConnString);
                 CONNECTPB.Open();
-                OleDbCommand COMMAND_PB = new OleDbCommand("SELECT COUNT (*) FROM Estandarizados_" + nomCia, CONNECTPB);
+                OleDbCommand COMMAND_PB = new OleDbCommand("SELECT COUNT (*) FROM STD_" + nomCia, CONNECTPB);
                 
-                pBMax = Convert.ToInt32(COMMAND_PB.ExecuteScalar());
+                progMax = Convert.ToInt32(COMMAND_PB.ExecuteScalar());
 
                 CONNECTPB.Close();
             }
             catch (Exception Ex) {
-                MessageBox.Show(Ex.ToString(), "ERROR EN PB_COUNT");
+                MessageBox.Show("EX:___" + Ex.ToString(), "Error al obtener registros de STD_" + nomCia, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            //this.Invoke(this.setBarDelegate);
-            */
 
             try
             {
                 OleDbConnection CONNECT_SD = new OleDbConnection(MyConnString);
                 CONNECT_SD.Open();
-                OleDbCommand COMMAND_SD = new OleDbCommand("SELECT DISTINCT Marca, Tipo, Modelo FROM Estandarizados_" + nomCia,
+                OleDbCommand COMMAND_SD = new OleDbCommand("SELECT DISTINCT Marca, Tipo, Modelo FROM STD_" + nomCia,
                     CONNECT_SD);
                 OleDbDataReader READER_SD = COMMAND_SD.ExecuteReader();
 
@@ -415,7 +1518,7 @@ namespace HomEstand_App
                     {
                         OleDbConnection CONNECT_NEWC = new OleDbConnection(MyConnString);
                         CONNECT_NEWC.Open();
-                        OleDbCommand COMMAND_NEWC = new OleDbCommand("SELECT * FROM Estandarizados_" + nomCia + " WHERE " +
+                        OleDbCommand COMMAND_NEWC = new OleDbCommand("SELECT * FROM STD_" + nomCia + " WHERE " +
                                 "Marca = '" + READER_SD["Marca"].ToString() +
                                 "' AND Tipo = '" + READER_SD["Tipo"].ToString() +
                                 "' AND Modelo = " + READER_SD["Modelo"].ToString() + "",
@@ -454,7 +1557,7 @@ namespace HomEstand_App
                     }
                     catch (Exception Ex)
                     {
-                        MessageBox.Show("EX:___" + Ex.ToString(), "Error en SELECT_FROM_NEW_COMP", MessageBoxButtons.OK, MessageBoxIcon.Error); 
+                        MessageBox.Show("EX:___" + Ex.ToString(), "Error en SELECT_FROM_NEW_COMP", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
 
                     // Getting from DatosEstandarizados
@@ -675,7 +1778,7 @@ namespace HomEstand_App
                     }
                     catch (Exception Ex)
                     {
-                        MessageBox.Show("EX:___" + Ex.ToString(), "Error en SELECT_FROM_DATOS_STD", MessageBoxButtons.OK, MessageBoxIcon.Error); 
+                        MessageBox.Show("EX:___" + Ex.ToString(), "Error en SELECT_FROM_DATOS_STD", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
 
                     // Evaluate Similarty
@@ -691,7 +1794,7 @@ namespace HomEstand_App
                             switch (MResult[i])
                             {
                                 case -2:
-                                    MessageBox.Show("La has liado, tío", "Error");
+                                    MessageBox.Show("Registro no evaluado.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     break;
                                 // No es Match, Insertar Nuevo Registro
                                 case -1:
@@ -734,9 +1837,9 @@ namespace HomEstand_App
                                         );
 
                                     }
-                                    catch (Exception ex)
+                                    catch (Exception Ex)
                                     {
-                                        MessageBox.Show(ex.ToString());
+                                        MessageBox.Show("EX:___" + Ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     }
                                     break;
                                 // Match Exitoso, Insercion de Referencia
@@ -754,7 +1857,7 @@ namespace HomEstand_App
 
                                             String myQuery = "UPDATE DatosEstandarizados " +
                                                 "SET Cia_" + numCia.ToString() + " = '" + NEWKList.ElementAt(i) + "'" +
-                                                ", Cia_Disponible = '" + sortDescrip(cDisp.Trim() + " " + numCia.ToString() + "| ", false).Trim() + "' "+
+                                                ", Cia_Disponible = '" + sortDescrip(cDisp.Trim() + " " + numCia.ToString() + "| ", false).Trim() + "' " +
                                                 "WHERE CEVIC = '" + CEVList.ElementAt(MResult[i]) + "' " +
                                                 "AND Modelo = '" + READER_SD["Modelo"].ToString() + "'";
 
@@ -771,7 +1874,7 @@ namespace HomEstand_App
                                     }
                                     else
                                     {
-                                        MessageBox.Show("La has liado en el Match, tío", "Error");
+                                        MessageBox.Show("Registro no válido.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     }
                                     break;
                             }
@@ -781,150 +1884,134 @@ namespace HomEstand_App
                 READER_SD.Close();
                 CONNECT_SD.Close();
 
-                MessageBox.Show("Compañía agregada a la tabla estandarizada", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Compañía " + nomCia + "agregada a la tabla estandarizada.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception Ex)
             {
-                MessageBox.Show("EX:___" + Ex.ToString(), "Error en SELECT_DISTINCT_MAR/TIP/MOD", MessageBoxButtons.OK, MessageBoxIcon.Error); 
+                MessageBox.Show("EX:___" + Ex.ToString(), "Error en SELECT_DISTINCT_MAR/TIP/MOD", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        // OBTENER EL INDICE DE UN VALOR EN UNA MATRIZ
-        public Tuple<int, int> getIndex(double[,] jaggedArray, double value)
-        {
-            int w = jaggedArray.GetLength(0); // width
-            int h = jaggedArray.GetLength(1); // height
-
-            for (int x = 0; x < w; ++x)
-            {
-                for (int y = 0; y < h; ++y)
-                {
-                    if (jaggedArray[x, y].Equals(value))
-                        return Tuple.Create(x, y);
-                }
-            }
-
-            return Tuple.Create(-1, -1);
-        }
-
-        // EVALUAR MATRIZ DE DESCRIPCIONES
-        public int[] evMatModels(DataTable DT_Std, DataTable DT_New, Double evAccuracy) 
+            // EVALUAR MATRIZ DE DESCRIPCIONES
+        public int[] evMatModels(DataTable DT_Std, DataTable DT_New, Double evAccuracy)
         {
             // JaroWinkler Object
             var Jw = new JaroWinkler();
 
             // Matriz que almacena los coeficientes de similaridad de la descripcion simple
-            double [,] MatSimD =  new double[DT_New.Rows.Count, DT_Std.Rows.Count];
+            double[,] MatSimD = new double[DT_New.Rows.Count, DT_Std.Rows.Count];
             // Matriz que almacena el número de campos que los modelos tienen en común
-            int [,] MatSimF =  new int[DT_New.Rows.Count, DT_Std.Rows.Count];
+            int[,] MatSimF = new int[DT_New.Rows.Count, DT_Std.Rows.Count];
 
             int NewCount = 0;
-            foreach (DataRow RowNModel in DT_New.Rows) {
+            foreach (DataRow RowNModel in DT_New.Rows)
+            {
                 int StdCount = 0;
-                foreach (DataRow RowSModel in DT_Std.Rows) {
+                foreach (DataRow RowSModel in DT_Std.Rows)
+                {
                     // Transmision
-                    if(eqDescrip(RowNModel.Field<String>(0), RowSModel.Field<String>(0)) || // Mismo valor para el campo
+                    if (eqDescrip(RowNModel.Field<String>(0), RowSModel.Field<String>(0)) || // Mismo valor para el campo
                         RowSModel.Field<String>(0).Length == 0 || // El registro estandarizado carece de valor para el campo
                         Jw.GetSimilarity(RowNModel.Field<String>(0), RowSModel.Field<String>(0)) > evAccuracy) // Alta similaridad en el campo
                     {
                         MatSimF[NewCount, StdCount]++;
                     }
                     // Gearbox | Caja de Cambios
-                    if(eqDescrip(RowNModel.Field<String>(1), RowSModel.Field<String>(1)) ||
+                    if (eqDescrip(RowNModel.Field<String>(1), RowSModel.Field<String>(1)) ||
                         RowNModel.Field<String>(1).Length == 0 || // El registro estandarizado carece de valor para el campo
-                        Jw.GetSimilarity(RowNModel.Field<String>(1), RowSModel.Field<String>(1)) > evAccuracy) 
+                        Jw.GetSimilarity(RowNModel.Field<String>(1), RowSModel.Field<String>(1)) > evAccuracy)
                     {
                         MatSimF[NewCount, StdCount]++;
                     }
                     // Cilindros
-                    if(eqDescrip(RowNModel.Field<String>(2), RowSModel.Field<String>(2)) ||
+                    if (eqDescrip(RowNModel.Field<String>(2), RowSModel.Field<String>(2)) ||
                         RowSModel.Field<String>(2).Length == 0 || // El registro estandarizado carece de valor para el campo
                         Jw.GetSimilarity(RowNModel.Field<String>(2), RowSModel.Field<String>(2)) > evAccuracy)
                     {
                         MatSimF[NewCount, StdCount]++;
                     }
                     // Pasajeros
-                    if(eqDescrip(RowNModel.Field<String>(3), RowSModel.Field<String>(3)) || 
+                    if (eqDescrip(RowNModel.Field<String>(3), RowSModel.Field<String>(3)) ||
                         RowSModel.Field<String>(3).Length == 0 || // El registro estandarizado carece de valor para el campo
                         Jw.GetSimilarity(RowNModel.Field<String>(3), RowSModel.Field<String>(3)) > evAccuracy)
                     {
                         MatSimF[NewCount, StdCount]++;
                     }
                     // Puertas
-                    if(eqDescrip(RowNModel.Field<String>(4), RowSModel.Field<String>(4)) ||
+                    if (eqDescrip(RowNModel.Field<String>(4), RowSModel.Field<String>(4)) ||
                         RowSModel.Field<String>(4).Length == 0 || // El registro estandarizado carece de valor para el campo
                         Jw.GetSimilarity(RowNModel.Field<String>(4), RowSModel.Field<String>(4)) > evAccuracy)
                     {
                         MatSimF[NewCount, StdCount]++;
                     }
                     // Frenos
-                    if(eqDescrip(RowNModel.Field<String>(5), RowSModel.Field<String>(5)) ||
+                    if (eqDescrip(RowNModel.Field<String>(5), RowSModel.Field<String>(5)) ||
                         RowSModel.Field<String>(5).Length == 0 || // El registro estandarizado carece de valor para el campo
                         Jw.GetSimilarity(RowNModel.Field<String>(5), RowSModel.Field<String>(5)) > evAccuracy)
                     {
                         MatSimF[NewCount, StdCount]++;
                     }
                     // Vestiduras
-                    if(eqDescrip(RowNModel.Field<String>(6), RowSModel.Field<String>(6)) ||
+                    if (eqDescrip(RowNModel.Field<String>(6), RowSModel.Field<String>(6)) ||
                         RowSModel.Field<String>(6).Length == 0 || // El registro estandarizado carece de valor para el campo
                         Jw.GetSimilarity(RowNModel.Field<String>(6), RowSModel.Field<String>(6)) > evAccuracy)
                     {
                         MatSimF[NewCount, StdCount]++;
                     }
                     // Sonido
-                    if(eqDescrip(RowNModel.Field<String>(7), RowSModel.Field<String>(7)) ||
+                    if (eqDescrip(RowNModel.Field<String>(7), RowSModel.Field<String>(7)) ||
                         RowSModel.Field<String>(7).Length == 0 || // El registro estandarizado carece de valor para el campo
                         Jw.GetSimilarity(RowNModel.Field<String>(7), RowSModel.Field<String>(7)) > evAccuracy)
                     {
                         MatSimF[NewCount, StdCount]++;
                     }
                     // Equipamiento
-                    if(eqDescrip(RowNModel.Field<String>(8), RowSModel.Field<String>(8)) ||
+                    if (eqDescrip(RowNModel.Field<String>(8), RowSModel.Field<String>(8)) ||
                         RowSModel.Field<String>(8).Length == 0 || // El registro estandarizado carece de valor para el campo
                         Jw.GetSimilarity(RowNModel.Field<String>(8), RowSModel.Field<String>(8)) > evAccuracy)
                     {
                         MatSimF[NewCount, StdCount]++;
                     }
                     // Aire
-                    if(eqDescrip(RowNModel.Field<String>(9), RowSModel.Field<String>(9)) ||
+                    if (eqDescrip(RowNModel.Field<String>(9), RowSModel.Field<String>(9)) ||
                         RowSModel.Field<String>(9).Length == 0 || // El registro estandarizado carece de valor para el campo
                         Jw.GetSimilarity(RowNModel.Field<String>(9), RowSModel.Field<String>(9)) > evAccuracy)
                     {
                         MatSimF[NewCount, StdCount]++;
                     }
                     // Bolsa de Aire
-                    if(eqDescrip(RowNModel.Field<String>(10), RowSModel.Field<String>(10)) ||
+                    if (eqDescrip(RowNModel.Field<String>(10), RowSModel.Field<String>(10)) ||
                         RowSModel.Field<String>(10).Length == 0 || // El registro estandarizado carece de valor para el campo
                         Jw.GetSimilarity(RowNModel.Field<String>(10), RowSModel.Field<String>(10)) > evAccuracy)
                     {
                         MatSimF[NewCount, StdCount]++;
                     }
                     // QC
-                    if(eqDescrip(RowNModel.Field<String>(11), RowSModel.Field<String>(11)) ||
+                    if (eqDescrip(RowNModel.Field<String>(11), RowSModel.Field<String>(11)) ||
                         RowSModel.Field<String>(11).Length == 0 || // El registro estandarizado carece de valor para el campo
                         Jw.GetSimilarity(RowNModel.Field<String>(11), RowSModel.Field<String>(11)) > evAccuracy)
                     {
                         MatSimF[NewCount, StdCount]++;
                     }
                     // Descripcion Simple
-                    MatSimD[NewCount, StdCount] = 
+                    MatSimD[NewCount, StdCount] =
                         // Verificando si el modelo estandarizado contiene Descripcion Simple
-                        (RowSModel.Field<String>(12).Length > 0 ) ?  
-                            Math.Max( 
-                                Math.Max(  
-                                    // Descripcion ordenada alfabeticamente
-                                    Jw.GetSimilarity(sortDescrip(RowNModel.Field<String>(12), false), 
+                        (RowSModel.Field<String>(12).Length > 0) ?
+                            Math.Max(
+                                Math.Max(
+                        // Descripcion ordenada alfabeticamente
+                                    Jw.GetSimilarity(sortDescrip(RowNModel.Field<String>(12), false),
                                         sortDescrip(RowSModel.Field<String>(12), false)),
-                                    // Descripcion ordenada inversamente
+                        // Descripcion ordenada inversamente
                                     Jw.GetSimilarity(sortDescrip(RowNModel.Field<String>(12), true),
                                         sortDescrip(RowSModel.Field<String>(12), true))
                                      ),
-                                // Descripcion por defecto
+                        // Descripcion por defecto
                                 Jw.GetSimilarity(RowNModel.Field<String>(12),
                                         RowSModel.Field<String>(12))
                                 )
                             :
-                            // Si la descripcion estandarizada está vacía, son compatibles
+                        // Si la descripcion estandarizada está vacía, son compatibles
                             0.7;
                     StdCount++;
                 }
@@ -948,7 +2035,7 @@ namespace HomEstand_App
             // Matches
             Int32 maxMatches = (DT_New.Rows.Count > DT_Std.Rows.Count) ? DT_Std.Rows.Count : DT_Std.Rows.Count;
             Int32 nMatches = 0;
-            
+
             do
             {
                 // Obteniendo coeficiente Maximo
@@ -1018,666 +2105,16 @@ namespace HomEstand_App
                     Result[i] = -1;
             }
             return Result;
-           }
-
-        // COMBO BOX 
-        private void cmb_Cia_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            int[] num_Comp = { 7, 21, 5, 26, 20, 2, 12 };
-            txt_CiaID.Text = num_Comp[cmb_Cia.SelectedIndex].ToString();
-        
-            //txt_CiaID.Text = CiasID[cmb_Cia.SelectedIndex];
-            String cMarca = "";
-            if (cmb_Marca.SelectedIndex >= 0)
-            {
-                cMarca = cmb_Marca.SelectedItem.ToString();
-            }
-            cmb_Marca.SelectedIndex = -1;
-            cmb_Marca.Items.Clear();
-
-            OleDbConnection CONNECT = new OleDbConnection(
-                MyConnString);
-            String CONSULT = "SELECT DISTINCT Marca as Brand FROM DAT_" + cmb_Cia.SelectedItem.ToString();
-            try
-            {
-                CONNECT.Open();
-                OleDbCommand COMMAND = new OleDbCommand(CONSULT, CONNECT);
-                OleDbDataReader READER = COMMAND.ExecuteReader();
-
-                if (READER.HasRows)
-                {
-                    while (READER.Read())
-                    {
-                        if (READER["Brand"].ToString() != "")
-                            cmb_Marca.Items.Add(READER["Brand"]);
-                    }
-                }
-                READER.Close();
-                CONNECT.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString(), "ERROR");
-            }
-            finally
-            {
-                if (cmb_Marca.Items.Contains(cMarca))
-                {
-                    cmb_Marca.SelectedItem = cMarca;
-                }
-                else {
-                    cmb_Marca.SelectedItem = -1;
-                    cmb_Tipo0.SelectedItem = -1;
-                    cmb_Tipo1.SelectedItem = -1;
-                    cmb_Tipo0.Items.Clear();
-                    cmb_Tipo1.Items.Clear();
-                }
-            }
         }
 
-        private void cmb_Marca_SelectedIndexChanged(object sender, EventArgs e)
+        // PANEL 5 - CAMPO DE PRUEBAS
+        private void btnTest1_Click(object sender, EventArgs e)
         {
-            if (cmb_Cia.SelectedIndex >= 0)
-            {
-                if (cmb_Marca.SelectedIndex >= 0)
-                {
-                    cmb_Tipo0.SelectedIndex = -1;
-                    cmb_Tipo1.SelectedIndex = -1;
-                    cmb_Tipo0.Items.Clear();
-                    cmb_Tipo1.Items.Clear();
-
-                    try
-                    {
-                        OleDbConnection CONNECT = new OleDbConnection(
-                            MyConnString);
-                        String CONSULT = "SELECT DISTINCT Tipo as Type FROM DAT_" + cmb_Cia.SelectedItem.ToString() + " WHERE Marca = '" + cmb_Marca.SelectedItem.ToString() + "'";
-                
-                        CONNECT.Open();
-                        OleDbCommand COMMAND = new OleDbCommand(CONSULT, CONNECT);
-                        OleDbDataReader READER = COMMAND.ExecuteReader();
-
-                        if (READER.HasRows)
-                        {
-                            while (READER.Read())
-                            {
-                                if (READER["Type"].ToString() != "")
-                                {
-                                    cmb_Tipo0.Items.Add(READER["Type"]);
-                                    cmb_Tipo1.Items.Add(READER["Type"]);
-                                }
-                            }
-                        }
-                        READER.Close();
-                        CONNECT.Close();
-                    }
-                    catch (Exception Ex)
-                    {
-                        MessageBox.Show("EX:___" + Ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
-                    }
-                }
-                else
-                {
-                    cmb_Marca.SelectedIndex = -1;
-                }
-            }
-            else
-            {
-                MessageBox.Show("Selecciona una Compañía", "ERROR");
-                cmb_Cia.SelectedIndex = -1;
-            }
-
+            double[,] Arry = { { 1.0, 7.25, 4.64 }, { 4.23, 7.251, 4.65 }, { 1.5, 4.7, 4.78 }, { 1.2, 5.6513, 5.6529 } };
+            double Max = Arry.Cast<double>().Max();
+            Tuple<int, int> position = getIndex(Arry, Max);
+            MessageBox.Show(position.ToString(), Max.ToString());
         }
-
-        // REFRESCAR INFO. EN APLICACION
-        private void btnRInfo_Click(object sender, EventArgs e)
-        {
-            cmb_Marca.SelectedIndex = -1;
-            txt_CiaID.Clear();
-        }
-
-        // MARCA Y TIPO - P1
-        // CAMBIAR TIPO
-        private void btn_CambiarTipo_Click(object sender, EventArgs e)
-        {
-            if (txt_NTipo.Text.Trim() != "")
-            {
-                if (cmb_Tipo0.SelectedIndex >= 0)
-                {
-                    if (chk_TDSimple.Checked)
-                    {
-                        cambiarTipo(" " + cmb_Tipo0.SelectedItem.ToString().Trim() + " ", txt_NTipo.Text, cmb_Marca.SelectedItem.ToString(), cmb_Cia.SelectedItem.ToString(), true);
-                    }
-                    else
-                    {
-                        cambiarTipo(" " + cmb_Tipo0.SelectedItem.ToString().Trim() + " ", txt_NTipo.Text, cmb_Marca.SelectedItem.ToString(), cmb_Cia.SelectedItem.ToString(), false);
-                    }
-                    txt_NTipo.Clear();
-                }
-                else
-                {
-                    MessageBox.Show("Selecciona el Tipo a Sustituir", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            else {
-                MessageBox.Show("Introduce el Nuevo Tipo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
-            }
-        }
-
-        private void cambiarTipo(String Tipo, String nTipo, String Marca, String Cia, Boolean tDSimple)
-        {
-            OleDbConnection CONNECT = new OleDbConnection(
-                MyConnString);
-            String CONSULT = "SELECT * FROM DAT_" + Cia + " WHERE Marca = '" + Marca + "'";
-            try
-            {
-                CONNECT.Open();
-                // Si el Tipo está en la Descripción Simple
-                OleDbCommand COMMAND = (tDSimple) ? 
-                    new OleDbCommand(CONSULT, CONNECT) : 
-                    new OleDbCommand(CONSULT + " AND Tipo = '" + Tipo.Trim() + "'", CONNECT);
-
-                OleDbDataReader READER = COMMAND.ExecuteReader();
-
-                while (READER.Read())
-                {
-                    String x;
-                    
-                    if (tDSimple)
-                    {
-                        x = " " + READER["DescripSimple"].ToString().Trim() + " ";
-                        if (x.Contains(Tipo))
-                        {
-                            //REMOVER Tipo de la Descripcion Simple
-                            x = x.Replace(Tipo, " ");
-
-                            doQuery("UPDATE DAT_" + Cia + " SET Tipo = '" + nTipo + "', DescripSimple = '" + x.Trim() + "' WHERE Clave = '" + READER["Clave"].ToString() +
-                                "' AND Marca = '" + READER["Marca"].ToString() + "'",
-
-                                MyConnString
-                                 );
-                        }
-                    }
-                    else
-                    {
-                        doQuery("UPDATE DAT_" + Cia + " SET Tipo = '" + nTipo + "' WHERE Tipo = '" + Tipo.Trim() +
-                                "' AND Marca = '" + READER["Marca"].ToString() + "'",
-
-                                MyConnString
-                                 );
-                    }
-
-                }
-                MessageBox.Show("Tipo cambiado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information); 
-                READER.Close();
-                CONNECT.Close();
-            }
-            catch (Exception Ex)
-            {
-                MessageBox.Show("EX:___" + Ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
-            }
-        }
-
-        // CAMBIAR MARCA
-        private void btn_CambiarMarca_Click(object sender, EventArgs e)
-        {
-            if (cmb_Tipo0.SelectedIndex >= 0)
-            {
-                if (cmb_NMarca.SelectedIndex >= 0)
-                {
-                    cambiarMarca(cmb_Tipo0.SelectedItem.ToString(), cmb_Marca.SelectedItem.ToString(), cmb_NMarca.SelectedItem.ToString(), cmb_Cia.SelectedItem.ToString());
-                    cmb_NMarca.SelectedIndex = -1;
-                }
-                else {
-                    MessageBox.Show("Introduce la Nueva Marca", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
-                }
-            }
-            else {
-                MessageBox.Show("Introduce el Tipo cuya Marca se va a Sustituir", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
-            }
-        }
-
-        private void cambiarMarca(String Tipo, String Marca, String nMarca, String Cia)
-        {
-            try
-            {
-                OleDbConnection CONNECT = new OleDbConnection(
-                    MyConnString);
-                String CONSULT = "SELECT * FROM DAT_" + Cia + " WHERE Marca = '" + Marca + "' AND Tipo = '" + Tipo + "' ORDER BY Clave";
-                CONNECT.Open();
-                OleDbCommand COMMAND = new OleDbCommand(CONSULT, CONNECT);
-
-                OleDbDataReader READER = COMMAND.ExecuteReader();
-
-                while (READER.Read())
-                {
-                    doQuery("UPDATE DAT_" + Cia + " SET Marca = '" + nMarca + "' WHERE Clave = '" + READER["Clave"].ToString() +
-                                "' AND Marca = '" + READER["Marca"].ToString() + "' AND Tipo = '" + READER["Tipo"].ToString() + "'",
-                                MyConnString
-                                 );
-                }     
-                MessageBox.Show("Marca cambiada correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                READER.Close();
-                CONNECT.Close();
-            }
-            catch (Exception Ex)
-            {
-                MessageBox.Show("EX:___" + Ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        // ACRONIMOS GENERALES - P2
-        private void cmb_Campo0_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            // Trans, Cil, Vest, Aire, QC, Equipado, EE, BAire, Sonido, ABS, RA, FN, CodRaro, DH 
-            String[,] fieldOptions = { 
-                                       { "2", "3", "4", "5", "6", "7", "8", "9", "10", "12", 
-                                           "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", 
-                                           "23", "24", "25", "27", "30", 
-                                           "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-                                        { "2Ptas", "2y4Ptas", "3Ptas", "3y5Ptas", "4Ptas", "5Ptas", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
-                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-                                        { "Aut", "Std", "7G-DCT", "7G-Tronic", "9G-DCT", "9G-Tronic", "AMG-Speedshift", "ASG", "AutoStick", "CVT", "DCT", 
-                                           "Drivelogic", "DSG", "Dualogic", "DuoSelect", "Easytronic", "EDC", "Geartronic", "GETRAG", "G-Tronic", "HSD", 
-                                           "Hydramatic", "Lineartronic", "M-DKG", "MCT", "Multitronic", "PDK", "Powershift", "Q-Tronic", "R-Tronic", "Secuencial", "SelectShift",
-                                           "Selespeed", "Sentronic", "Shiftmatic", "Shiftronic", "SMG-II", "SMG", "Sportronic", "SportShift", "Steptronic", "S-Tronic",
-                                           "TCT", "Tiptronic", "Touchtronic", "X-Tronic"}, 
-                                        { "0Cil", "2Cil", "3Cil", "4Cil", "5Cil", "6Cil", "8Cil", "10Cil", "12Cil", 
-                                            "", "", "", "", "", "", "", "","", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-                                        { "Alcantara", "Gamusina", "Gamuza", "Leatherette", "Napa", "Piel parcial", "Piel", "Tela", "Terciopelo", "Velour", 
-                                            "Vinil", "", "", "","", "", "", "","", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-                                        { "C/AAcc", "S/AAcc", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
-                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-                                        { "C/Qcc", "S/Qcc", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
-                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-                                        { "6CD", "AFS", "ASIST.EST.", "AUDIO MANEJO", "C/CAMARA", "C/LOCKER", "CAM.TRAS.", "COMAND ONLINE", "COMP.VIAJE.", "CTROL/AUDIO", 
-                                            "CTROL/VOZ", "EQUIPADO", "F/BI-XENON", "F/XENON", "GETRONIC", "GMLINK", "FULL LINK", "GPS", "HIELERA", "HILL HOLDER", "JOYBOX", 
-                                            "MEDIA NAV", "MULTIMEDIA", "MYGIG", "NAVIGON", "PTA.TRAS.ELEC.", "SEMIEQUIPADO", "RNS-510", "SIST.ENTRET.", "SIST.NAV.", 
-                                            "TPM", "TV", "UCONNECT", "WIFI", "", "", "", "", "", "", "", "", "", "", "", ""},
-                                        { "CE", "EE", "SE", "", "", "", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
-                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-                                        { "CB", "CBL", "SB", "", "", "", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
-                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-                                        { "AM", "BD", "BOSE", "BT", "CD", "CT", "DVD", "DYNAUDIO", "FENDER", "FM",
-                                            "MP3", "RADIO", "SS", "USB", "","", "", "","", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-                                        { "ABS", "D/ABS", "D/V", "D/T", "DIS", "NEU", "TAM", "V", "V/DIS", "V/T", "", "", "", "","", "", "", "","", "", "", "", "",
-                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-                                        { "R-13", "R-14", "R-15", "R-16", "R-17", "R-18", "R-19", "R-20", "R-21", "R-22",
-                                            "R-25", "RA", "RA-14", "RA-15", "RA-16", "RA-17", "RA-18", "RA-19", "RA-20",
-                                            "RA-21", "", "", "", "", "", "", "", "", "", 
-                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-                                        { "FN", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
-                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-                                        { "SM", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
-                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-                                        { "DH", "DHS", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
-                                            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""}
-                                     };
-
-
-            cmb_NAcr.Text = "";
-            cmb_NAcr.Items.Clear();
-            cmb_NAcr.SelectedIndex = -1;
-            if (cmb_Campo0.SelectedIndex >= 0)
-            {
-                for (int i = 0; i < 45; i++)
-                {
-                    if (fieldOptions[cmb_Campo0.SelectedIndex, i] != "")
-                        cmb_NAcr.Items.Add(fieldOptions[cmb_Campo0.SelectedIndex, i]);
-                }
-                
-            }
-            chk_AcDSimple0.Checked = false;
-        }
-
-        private void btn_CambiarAcroGen_Click(object sender, EventArgs e)
-        {
-            if (txt_Acr0.Text.Trim() != "")
-            {
-                if (chk_AcDSimple0.Checked)
-                {
-                    if (txt_NAcr0.Text.Trim() != "")
-                    {
-                        cambiarAcroGen(" " + txt_Acr0.Text.Trim() + " ", txt_NAcr0.Text.Trim(), "DescripSimple", cmb_Cia.SelectedItem.ToString(), true);
-                        txt_Acr0.Clear();
-                        txt_NAcr0.Clear();
-                    }
-                    else {
-                        MessageBox.Show("Introduce el Nuevo Acrónimo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-                else {
-                    if (cmb_Campo0.SelectedIndex >= 0)
-                    {
-                        if (cmb_NAcr.SelectedIndex >= 0)
-                        {
-                            cambiarAcroGen(" " + txt_Acr0.Text.Trim() + " ", cmb_NAcr.SelectedItem.ToString(), cmb_Campo0.SelectedItem.ToString(), cmb_Cia.SelectedItem.ToString(), false);
-                            txt_Acr0.Clear();
-                        }
-                        else {
-                            MessageBox.Show("Introduce el Nuevo Acrónimo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
-                    else {
-                        MessageBox.Show("Selecciona un Campo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }  
-                }
-            }
-            else {
-                MessageBox.Show("Introduce el Acrónimo a Sustituir", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void cambiarAcroGen(String Acro, String nAcro, String Campo, String Cia, Boolean DSimple)
-        {
-            OleDbConnection CONNECT = new OleDbConnection(
-                MyConnString);
-            String CONSULT = "SELECT * FROM DAT_" + Cia + " ORDER BY Clave, Modelo";
-            try
-            {
-                CONNECT.Open();
-                OleDbCommand COMMAND = new OleDbCommand(CONSULT, CONNECT);
-                OleDbDataReader READER = COMMAND.ExecuteReader();
-
-                while (READER.Read())
-                {
-                    String x = " " + READER["DescripSimple"].ToString() + " ";
-                    if (DSimple)
-                    {
-                        if (x.Contains(Acro))
-                        {
-                            x = x.Replace(Acro, " " + nAcro.Trim() + " ");
-                            doQuery("UPDATE DAT_" + Cia + " SET DescripSimple = '" + x.Trim() + "' WHERE Clave = '" + READER["Clave"].ToString() +
-                                "' AND Modelo = " + READER["Modelo"].ToString(),
-
-                                MyConnString
-                                 );
-                        }
-                    }
-                    else
-                    {
-                        String y = READER[Campo].ToString();
-
-                        if (x.Contains(Acro))
-                        {
-                            if (!(" " + y.Trim() + " ").Contains(" " + nAcro + " "))
-                            {
-                                x = x.Replace(Acro, " ");
-                                y = (y.Length > 0) ? y + " " + nAcro : Acro;
-                                doQuery("UPDATE DAT_" + Cia + " SET DescripSimple = '" + x.Trim() + "', " + Campo + " = '" + y + "' WHERE Clave = '" + READER["Clave"].ToString() +
-                                    "' AND Modelo = " + READER["Modelo"].ToString(),
-
-                                    MyConnString
-                                     );
-                            }
-                            else
-                            {
-                                x = x.Replace(Acro, " ");
-                                doQuery("UPDATE DAT_" + Cia + " SET DescripSimple = '" + x.Trim() + "' WHERE Clave = '" + READER["Clave"].ToString() +
-                                    "' AND Modelo = " + READER["Modelo"].ToString(),
-
-                                    MyConnString
-                                     );
-                            }
-                        }
-                    }
-                }
-                MessageBox.Show("Acrónimo cambiado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                READER.Close();
-                CONNECT.Close();
-            }
-            catch (Exception Ex)
-            {
-                MessageBox.Show("EX:___" + Ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void chk_AcDSimple_CheckedChanged(object sender, EventArgs e)
-        {
-            cmb_Campo0.SelectedIndex = -1;
-            cmb_NAcr.SelectedIndex = -1;
-        }
-
-        private void btn_EliminarAcroGen_Click(object sender, EventArgs e)
-        {
-            if (txt_Acr0.Text.Trim() != "")
-            {
-                if (chk_AcDSimple0.Checked)
-                {
-                    DialogResult dialogResult = MessageBox.Show("¿Borrar contenido especificado?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    if (dialogResult == DialogResult.Yes)
-                    {
-                        eliminarAcroGen(" " + txt_Acr0.Text + " ", cmb_Cia.SelectedItem.ToString(), "DescripSimple"); 
-                    }
-                }
-                else
-                {
-                    if (cmb_Campo0.SelectedIndex >= 0)
-                    {
-                        DialogResult dialogResult = MessageBox.Show("¿Borrar contenido especificado?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                        if (dialogResult == DialogResult.Yes)
-                        {
-                            eliminarAcroGen(" " + txt_Acr0.Text + " ", cmb_Cia.SelectedItem.ToString(), cmb_Campo0.SelectedItem.ToString());
-                        }
-                    }
-                    else {
-                        MessageBox.Show("Selecciona el Campo donde se eliminará el Acrónimo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-                txt_Acr0.Clear();
-            }
-            else
-            {
-                MessageBox.Show("Introduce el Acrónimo a Eliminar", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void eliminarAcroGen(String Acro, String Cia, String Campo)
-        {
-            OleDbConnection CONNECT = new OleDbConnection(
-                MyConnString);
-            String CONSULT = "SELECT * FROM DAT_" + Cia + " ORDER BY Clave";
-            try
-            {
-                CONNECT.Open();
-                OleDbCommand COMMAND = new OleDbCommand(CONSULT, CONNECT);
-                OleDbDataReader READER = COMMAND.ExecuteReader();
-
-                if (READER.HasRows)
-                {
-                    while (READER.Read())
-                    {
-                        String x = " " + READER[Campo].ToString().Trim() + " ";
-                        if (x.Contains(Acro))
-                        {
-                            x = x.Replace(Acro, " ");
-                            doQuery("UPDATE DAT_" + Cia + " SET " + Campo + " = '" + x.Trim() + "' WHERE Clave = '" + READER["Clave"].ToString() +
-                                "' AND Modelo = " + READER["Modelo"].ToString(),
-
-                                MyConnString
-                                );
-                        }
-
-                    }
-                }
-                MessageBox.Show("Acrónimo eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                READER.Close();
-                CONNECT.Close();
-            }
-            catch (Exception Ex)
-            {
-                MessageBox.Show("EX:___" + Ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void chk_AcDSimple1_CheckedChanged(object sender, EventArgs e)
-        {
-            cmb_Campo1.SelectedIndex = -1;
-        }
-
-        private void btn_CambiarAcroMar_Click(object sender, EventArgs e)
-        {
-
-            if (cmb_Marca.SelectedIndex >= 0) 
-            {
-                if (txt_Acr1.Text.Trim() != "")
-                {
-                    if (txt_NAcr1.Text.Trim() != "")
-                    {
-                        if (chk_AcTipo.Checked)
-                        {
-                            if (cmb_Tipo1.SelectedIndex >= 0)
-                            {
-                                if (chk_AcDSimple1.Checked)
-                                {
-                                    // MARCA-TIPO Y DSIMPLE
-                                    cambiarAcroMar(
-                                    " " + txt_Acr1.Text.Trim() + " ",
-                                    txt_NAcr1.Text.Trim(),
-                                    cmb_Cia.SelectedItem.ToString(),
-                                    cmb_Marca.SelectedItem.ToString(),
-                                    cmb_Tipo1.SelectedItem.ToString(),
-                                    "DescripSimple"
-                                    );
-                                }
-                                else {
-                                    // MARCA-TIPO Y CAMPO
-                                    cambiarAcroMar(
-                                    " " + txt_Acr1.Text.Trim() + " ",
-                                    txt_NAcr1.Text.Trim(),
-                                    cmb_Cia.SelectedItem.ToString(),
-                                    cmb_Marca.SelectedItem.ToString(),
-                                    cmb_Tipo1.SelectedItem.ToString(),
-                                    cmb_Campo1.SelectedItem.ToString()
-                                    );
-                                }
-                                txt_NAcr1.Clear();
-                            }
-                            else {
-                                MessageBox.Show("Selecciona una Tipo", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
-                        }
-                        else {
-                            if (chk_AcDSimple1.Checked)
-                            {
-                                // MARCA Y DSIMPLE
-                                cambiarAcroMar(
-                                    " " + txt_Acr1.Text.Trim() + " ",
-                                    txt_NAcr1.Text.Trim(),
-                                    cmb_Cia.SelectedItem.ToString(),
-                                    cmb_Marca.SelectedItem.ToString(),
-                                    "noTipo",
-                                    "DescripSimple"
-                                    );
-                            }
-                            else {
-                                // MARCA Y CAMPO
-                                cambiarAcroMar(
-                                    " " + txt_Acr1.Text.Trim() + " ", 
-                                    txt_NAcr1.Text.Trim(), 
-                                    cmb_Cia.SelectedItem.ToString(), 
-                                    cmb_Marca.SelectedItem.ToString(), 
-                                    "noTipo", 
-                                    cmb_Campo1.SelectedItem.ToString()
-                                    );
-                            }
-                            txt_NAcr1.Clear();
-                        }
-                    }
-                    else {
-                        MessageBox.Show("Introduce Acrónimo a Insertar", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-                else {
-                    MessageBox.Show("Introduce Acrónimo a Sustituir", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
-                }
-            }
-            else {
-                MessageBox.Show("Selecciona una Marca", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
-            }
-        }
-
-        private void cambiarAcroMar(String Acro, String nAcro, String Cia, String Marca, String Tipo, String Campo)
-        {
-            OleDbConnection CONNECT = new OleDbConnection(
-                MyConnString);
-
-            String CONSULT = (Tipo == "noTipo") ?  
-                "SELECT * FROM DAT_" + Cia + " WHERE Marca = '" + Marca + "' ORDER BY Clave" :
-                "SELECT * FROM DAT_" + Cia + " WHERE Marca = '" + Marca + "' AND Tipo = '" + Tipo + "' ORDER BY Clave";
-
-            try
-            {
-                CONNECT.Open();
-                OleDbCommand COMMAND = new OleDbCommand(CONSULT, CONNECT);
-                OleDbDataReader READER = COMMAND.ExecuteReader();
-
-                if (READER.HasRows)
-                {
-                    while (READER.Read())
-                    {
-                        String x;
-                        if (Campo != "DescripSimple") {
-                            x = " " + READER["DescripSimple"].ToString().Trim() + " ";
-                            String y = READER[Campo].ToString();
-                            if (x.Contains(Acro))
-                            {
-                                x = x.Replace(Acro, " ");
-                                y = (!y.Contains(nAcro)) ? y + " " + nAcro : nAcro;
-
-                                if (Tipo == "noTipo")
-                                {
-                                    doQuery("UPDATE DAT_" + Cia + " SET DescripSimple = '" + x.Trim() + "', " + Campo + " = '" + y + "' WHERE Clave = '" + READER["Clave"].ToString() +
-                                        "' AND Marca = '" + READER["Marca"].ToString() + "'",
-
-                                        MyConnString
-                                        );
-                                }
-                                else {
-                                    doQuery("UPDATE DAT_" + Cia + " SET DescripSimple = '" + x.Trim() + "', " + Campo + " = '" + y + "' WHERE Clave = '" + READER["Clave"].ToString() +
-                                       "' AND Marca = '" + READER["Marca"].ToString() + "' AND Tipo = '" + READER["Tipo"].ToString() + "'",
-
-                                       MyConnString
-                                       );
-                                }
-                            }
-                        }
-                        else
-                        {
-                            x = " " + READER[Campo].ToString() + " ";
-                            if (x.Contains(Acro))
-                            {
-                                x = x.Replace(Acro, " " + nAcro + " ");
-                                if (Tipo == "noTipo")
-                                {
-                                    doQuery("UPDATE DAT_" + Cia + " SET " + Campo + " = '" + x.Trim() + "' WHERE Clave = '" + READER["Clave"].ToString() +
-                                        "' AND Marca = '" + READER["Marca"].ToString() + "'",
-
-                                        MyConnString
-                                        );
-                                }
-                                else
-                                {
-                                    doQuery("UPDATE DAT_" + Cia + " SET " + Campo + " = '" + x.Trim() + "' WHERE Clave = '" + READER["Clave"].ToString() +
-                                       "' AND Marca = '" + READER["Marca"].ToString() + "' AND Tipo = '" + READER["Tipo"].ToString() + "'",
-
-                                       MyConnString
-                                       );
-                                }
-                            }
-                        }
-                    }
-                }
-                MessageBox.Show("Acrónimo sustituido correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                READER.Close();
-                CONNECT.Close();
-            }
-            catch (Exception Ex)
-            {
-                MessageBox.Show("EX:___" + Ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
- 
        
     }
 }

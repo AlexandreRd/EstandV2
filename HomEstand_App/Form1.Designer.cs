@@ -74,8 +74,6 @@
             this.btn_AgregarCiaHom = new System.Windows.Forms.Button();
             this.btn_GenerarTablaSTD = new System.Windows.Forms.Button();
             this.label16 = new System.Windows.Forms.Label();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.txtTest1 = new System.Windows.Forms.TextBox();
@@ -86,8 +84,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.textBox6 = new System.Windows.Forms.TextBox();
-            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.txt_ProgCount = new System.Windows.Forms.TextBox();
+            this.txt_TimeExec = new System.Windows.Forms.TextBox();
             this.btnRInfo = new System.Windows.Forms.Button();
             this.txt_CiaID = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -101,7 +99,6 @@
             this.tabPage4.SuspendLayout();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nu_Precision)).BeginInit();
-            this.tabPage5.SuspendLayout();
             this.tabPage6.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -114,7 +111,6 @@
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
-            this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Controls.Add(this.tabPage6);
             this.tabControl1.Location = new System.Drawing.Point(16, 122);
             this.tabControl1.Name = "tabControl1";
@@ -555,6 +551,7 @@
             this.btnEliminarAcroMar.TabIndex = 7;
             this.btnEliminarAcroMar.Text = "Eliminar Acrónimo";
             this.btnEliminarAcroMar.UseVisualStyleBackColor = true;
+            this.btnEliminarAcroMar.Click += new System.EventHandler(this.btnEliminarAcroMar_Click);
             // 
             // label10
             // 
@@ -653,6 +650,7 @@
             this.btn_AgregarCiaHom.TabIndex = 3;
             this.btn_AgregarCiaHom.Text = "Agregar a Homologación\r\n";
             this.btn_AgregarCiaHom.UseVisualStyleBackColor = true;
+            this.btn_AgregarCiaHom.Click += new System.EventHandler(this.btn_AgregarCiaHom_Click);
             // 
             // btn_GenerarTablaSTD
             // 
@@ -662,6 +660,7 @@
             this.btn_GenerarTablaSTD.TabIndex = 2;
             this.btn_GenerarTablaSTD.Text = "Generar Tabla Estandarizada\r\n";
             this.btn_GenerarTablaSTD.UseVisualStyleBackColor = true;
+            this.btn_GenerarTablaSTD.Click += new System.EventHandler(this.btn_GenerarTablaSTD_Click);
             // 
             // label16
             // 
@@ -671,27 +670,6 @@
             this.label16.Size = new System.Drawing.Size(108, 26);
             this.label16.TabIndex = 0;
             this.label16.Text = "Porcentaje de \r\nTolerancia/Precisión:\r\n";
-            // 
-            // tabPage5
-            // 
-            this.tabPage5.Controls.Add(this.groupBox6);
-            this.tabPage5.Location = new System.Drawing.Point(4, 22);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(509, 210);
-            this.tabPage5.TabIndex = 4;
-            this.tabPage5.Text = "Base de Datos";
-            this.tabPage5.UseVisualStyleBackColor = true;
-            // 
-            // groupBox6
-            // 
-            this.groupBox6.Location = new System.Drawing.Point(6, 6);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(496, 191);
-            this.groupBox6.TabIndex = 1;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Generar Set de Tablas para Compañía (D_COMP, EST_COMP); Eliminar Registros de Tab" +
-    "la Estandarizada.";
             // 
             // tabPage6
             // 
@@ -795,8 +773,8 @@
             // 
             // groupBox8
             // 
-            this.groupBox8.Controls.Add(this.textBox6);
-            this.groupBox8.Controls.Add(this.textBox5);
+            this.groupBox8.Controls.Add(this.txt_ProgCount);
+            this.groupBox8.Controls.Add(this.txt_TimeExec);
             this.groupBox8.Location = new System.Drawing.Point(361, 19);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(137, 70);
@@ -804,23 +782,23 @@
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Progreso de Operación";
             // 
-            // textBox6
+            // txt_ProgCount
             // 
-            this.textBox6.Enabled = false;
-            this.textBox6.Location = new System.Drawing.Point(13, 43);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.ReadOnly = true;
-            this.textBox6.Size = new System.Drawing.Size(102, 20);
-            this.textBox6.TabIndex = 0;
+            this.txt_ProgCount.Enabled = false;
+            this.txt_ProgCount.Location = new System.Drawing.Point(13, 43);
+            this.txt_ProgCount.Name = "txt_ProgCount";
+            this.txt_ProgCount.ReadOnly = true;
+            this.txt_ProgCount.Size = new System.Drawing.Size(102, 20);
+            this.txt_ProgCount.TabIndex = 0;
             // 
-            // textBox5
+            // txt_TimeExec
             // 
-            this.textBox5.Enabled = false;
-            this.textBox5.Location = new System.Drawing.Point(13, 18);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.ReadOnly = true;
-            this.textBox5.Size = new System.Drawing.Size(102, 20);
-            this.textBox5.TabIndex = 0;
+            this.txt_TimeExec.Enabled = false;
+            this.txt_TimeExec.Location = new System.Drawing.Point(13, 18);
+            this.txt_TimeExec.Name = "txt_TimeExec";
+            this.txt_TimeExec.ReadOnly = true;
+            this.txt_TimeExec.Size = new System.Drawing.Size(102, 20);
+            this.txt_TimeExec.TabIndex = 0;
             // 
             // btnRInfo
             // 
@@ -877,7 +855,6 @@
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nu_Precision)).EndInit();
-            this.tabPage5.ResumeLayout(false);
             this.tabPage6.ResumeLayout(false);
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
@@ -901,7 +878,6 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.TextBox txt_CiaID;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox groupBox2;
@@ -940,15 +916,14 @@
         private System.Windows.Forms.ComboBox cmb_Tipo1;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.Button btn_AgregarCiaHom;
         private System.Windows.Forms.Button btn_GenerarTablaSTD;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.NumericUpDown nu_Precision;
         private System.Windows.Forms.GroupBox groupBox8;
-        private System.Windows.Forms.TextBox textBox6;
-        private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.TextBox txt_ProgCount;
+        private System.Windows.Forms.TextBox txt_TimeExec;
         private System.Windows.Forms.TextBox txt_NAcr0;
         private System.Windows.Forms.CheckBox chk_AcDSimple0;
         private System.Windows.Forms.Label label14;
