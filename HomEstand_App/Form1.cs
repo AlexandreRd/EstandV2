@@ -377,7 +377,7 @@ namespace HomEstand_App
         private void cmb_Cia_SelectedIndexChanged(object sender, EventArgs e)
         {
             int[] num_Comp = { 7, 21, 5, 26, 20, 2, 12 };
-            txt_CiaID.Text = num_Comp[cmb_Cia.SelectedIndex].ToString();
+            txt_CiaID.Text = (cmb_Cia.SelectedIndex > 0) ? num_Comp[cmb_Cia.SelectedIndex].ToString(): "";
         
             //txt_CiaID.Text = CiasID[cmb_Cia.SelectedIndex];
             String cMarca = "";
@@ -388,42 +388,46 @@ namespace HomEstand_App
             cmb_Marca.SelectedIndex = -1;
             cmb_Marca.Items.Clear();
 
-            OleDbConnection CONNECT = new OleDbConnection(
-                MyConnString);
-            String CONSULT = "SELECT DISTINCT Marca as Brand FROM DAT_" + cmb_Cia.SelectedItem.ToString();
-            try
+            if (cmb_Cia.SelectedIndex >= 0)
             {
-                CONNECT.Open();
-                OleDbCommand COMMAND = new OleDbCommand(CONSULT, CONNECT);
-                OleDbDataReader READER = COMMAND.ExecuteReader();
+                OleDbConnection CONNECT = new OleDbConnection(
+                    MyConnString);
+                String CONSULT = "SELECT DISTINCT Marca as Brand FROM DAT_" + cmb_Cia.SelectedItem.ToString();
+                try
+                {
+                    CONNECT.Open();
+                    OleDbCommand COMMAND = new OleDbCommand(CONSULT, CONNECT);
+                    OleDbDataReader READER = COMMAND.ExecuteReader();
 
-                if (READER.HasRows)
-                {
-                    while (READER.Read())
+                    if (READER.HasRows)
                     {
-                        if (READER["Brand"].ToString() != "")
-                            cmb_Marca.Items.Add(READER["Brand"]);
+                        while (READER.Read())
+                        {
+                            if (READER["Brand"].ToString() != "")
+                                cmb_Marca.Items.Add(READER["Brand"]);
+                        }
                     }
+                    READER.Close();
+                    CONNECT.Close();
                 }
-                READER.Close();
-                CONNECT.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString(), "ERROR");
-            }
-            finally
-            {
-                if (cmb_Marca.Items.Contains(cMarca))
+                catch (Exception ex)
                 {
-                    cmb_Marca.SelectedItem = cMarca;
+                    MessageBox.Show(ex.ToString(), "ERROR");
                 }
-                else {
-                    cmb_Marca.SelectedItem = -1;
-                    cmb_Tipo0.SelectedItem = -1;
-                    cmb_Tipo1.SelectedItem = -1;
-                    cmb_Tipo0.Items.Clear();
-                    cmb_Tipo1.Items.Clear();
+                finally
+                {
+                    if (cmb_Marca.Items.Contains(cMarca))
+                    {
+                        cmb_Marca.SelectedItem = cMarca;
+                    }
+                    else
+                    {
+                        cmb_Marca.SelectedItem = -1;
+                        cmb_Tipo0.SelectedItem = -1;
+                        cmb_Tipo1.SelectedItem = -1;
+                        cmb_Tipo0.Items.Clear();
+                        cmb_Tipo1.Items.Clear();
+                    }
                 }
             }
         }
@@ -485,8 +489,15 @@ namespace HomEstand_App
             // REFRESCAR INFORMACIÓN (COMBO-BOXES)
         private void btnRInfo_Click(object sender, EventArgs e)
         {
+            cmb_Tipo0.SelectedIndex = -1;
+            cmb_Tipo1.SelectedIndex = -1;
             cmb_Marca.SelectedIndex = -1;
+            cmb_Cia.SelectedIndex = -1;
             txt_CiaID.Clear();
+            cmb_Tipo0.Text = "";
+            cmb_Tipo1.Text = "";
+            cmb_Marca.Text = "";
+            cmb_Cia.Text = "";
         }
 
         // PANEL 1: MARCA Y TIPO
@@ -625,10 +636,10 @@ namespace HomEstand_App
         {
             // Trans, Cil, Vest, Aire, QC, Equipado, EE, BAire, Sonido, ABS, RA, FN, CodRaro, DH 
             String[,] fieldOptions = { 
-                                       { "2", "3", "4", "5", "6", "7", "8", "9", "10", "12", 
+                                       { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", 
                                            "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", 
-                                           "23", "24", "25", "27", "30", 
-                                           "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+                                           "23", "24", "25", "26", "27","28", "29","30", 
+                                           "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
                                         { "2Ptas", "2y4Ptas", "3Ptas", "3y5Ptas", "4Ptas", "5Ptas", "", "", "", "", "", "", "", "","", "", "", "","", "", "", "", "",
                                             "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
                                         { "Aut", "Std", "7G-DCT", "7G-Tronic", "9G-DCT", "9G-Tronic", "AMG-Speedshift", "ASG", "AutoStick", "CVT", "DCT", 
@@ -2115,6 +2126,6 @@ namespace HomEstand_App
             Tuple<int, int> position = getIndex(Arry, Max);
             MessageBox.Show(position.ToString(), Max.ToString());
         }
-       
+
     }
 }

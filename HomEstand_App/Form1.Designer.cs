@@ -76,7 +76,6 @@
             this.label16 = new System.Windows.Forms.Label();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.txtTest1 = new System.Windows.Forms.TextBox();
             this.btnTest1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.cmb_Cia = new System.Windows.Forms.ComboBox();
@@ -684,7 +683,6 @@
             // 
             // groupBox7
             // 
-            this.groupBox7.Controls.Add(this.txtTest1);
             this.groupBox7.Controls.Add(this.btnTest1);
             this.groupBox7.Location = new System.Drawing.Point(6, 6);
             this.groupBox7.Name = "groupBox7";
@@ -692,13 +690,6 @@
             this.groupBox7.TabIndex = 1;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Área de Desarrollo";
-            // 
-            // txtTest1
-            // 
-            this.txtTest1.Location = new System.Drawing.Point(20, 30);
-            this.txtTest1.Name = "txtTest1";
-            this.txtTest1.Size = new System.Drawing.Size(100, 20);
-            this.txtTest1.TabIndex = 1;
             // 
             // btnTest1
             // 
@@ -769,7 +760,7 @@
             this.groupBox1.Size = new System.Drawing.Size(513, 100);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Navegación";
+            this.groupBox1.Text = "Control de Datos";
             // 
             // groupBox8
             // 
@@ -790,6 +781,7 @@
             this.txt_ProgCount.ReadOnly = true;
             this.txt_ProgCount.Size = new System.Drawing.Size(102, 20);
             this.txt_ProgCount.TabIndex = 0;
+            this.txt_ProgCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // txt_TimeExec
             // 
@@ -799,6 +791,7 @@
             this.txt_TimeExec.ReadOnly = true;
             this.txt_TimeExec.Size = new System.Drawing.Size(102, 20);
             this.txt_TimeExec.TabIndex = 0;
+            this.txt_TimeExec.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // btnRInfo
             // 
@@ -857,7 +850,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nu_Precision)).EndInit();
             this.tabPage6.ResumeLayout(false);
             this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox8.ResumeLayout(false);
@@ -885,7 +877,6 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Button btnTest1;
-        private System.Windows.Forms.TextBox txtTest1;
         private System.Windows.Forms.CheckBox chk_TDSimple;
         private System.Windows.Forms.Button btn_CambiarMarca;
         private System.Windows.Forms.Label label6;
